@@ -1,8 +1,13 @@
 package com.hauduepascal.ferez96.battleship.validator;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -10,6 +15,7 @@ import java.util.Arrays;
 import static org.junit.Assert.*;
 
 public class AuctionValidatorTest {
+    Logger Log = LoggerFactory.getLogger(AuctionValidatorTest.class);
 
     @Test
     public void checkPrices() {

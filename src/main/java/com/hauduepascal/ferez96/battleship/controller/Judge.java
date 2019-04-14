@@ -26,7 +26,6 @@ public class Judge {
 
         Ship[] ships = new Ship[10];
         for (int i = 0; i < 10; ++i) ships[i] = new Ship();
-        for (int i = 0; i < 10; ++i) System.out.println(ships[i]);
 
         //
         Path f1 = p1.getRootDir().resolve("prices.txt");

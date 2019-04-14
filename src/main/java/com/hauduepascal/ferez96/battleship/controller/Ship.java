@@ -2,7 +2,7 @@ package com.hauduepascal.ferez96.battleship.controller;
 
 import java.util.Random;
 
-public class Ship {
+public class Ship implements Playground.ICell {
     private static final Random RANDOM = new Random();
 
     private int hp;
@@ -21,6 +21,10 @@ public class Ship {
 
     @Override
     public String toString() {
+        return this.hp + " " + this.atk + " " + this.range;
+    }
+
+    public String toBeautyString() {
         String sb = "[" +
                 "HP:" + this.hp + "|" +
                 "ATK:" + this.atk + "|" +
