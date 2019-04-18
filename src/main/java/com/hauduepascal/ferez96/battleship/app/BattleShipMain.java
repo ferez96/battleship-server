@@ -5,6 +5,7 @@ import com.hauduepascal.ferez96.battleship.common.Maps;
 import com.hauduepascal.ferez96.battleship.common.Utils;
 import com.hauduepascal.ferez96.battleship.controller.*;
 import com.hauduepascal.ferez96.battleship.enums.TeamColor;
+import com.hauduepascal.ferez96.battleship.validator.PlayerValidator;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -40,13 +42,19 @@ public class BattleShipMain {
                     break;
 
                 case "play":
-                    Player w = importPlayer(0, TeamColor.White);
+                    Player w = importPlayer("AI1", TeamColor.White);
                     if (w != null) System.out.println(w);
-                    Player b = importPlayer(1, TeamColor.Black);
+                    Player b = importPlayer("AI2", TeamColor.Black);
                     if (b != null) System.out.println(b);
-                    Judge judge = new Judge();
-                    judge.importPlayers(b, w);
-                    judge.phrase1();
+
+                    if (b == null || w == null) System.exit(1);
+                    else {
+                        Judge judge = new Judge();
+                        judge.importPlayers(b, w);
+                        judge.phrase1();
+                        judge.phrase2();
+                        judge.phrase3();
+                    }
                     break;
                 default:
                     printHelp();
@@ -63,13 +71,17 @@ public class BattleShipMain {
         System.out.println("\tclear\t-\tXoa resource cu");
     }
 
-    private static Player importPlayer(long id, TeamColor color) {
-        String name = "Player " + id;
+    private static Player importPlayer(String name, TeamColor color) {
         Player p = null;
         try {
+            Path source = Global.PROJECT_PATH.resolve("player").resolve(name);
+            Path target = Global.FIELD_PATH.resolve(color.toString());
+            PlayerValidator.checkPlayerDir(source);
+            FileUtils.deleteDirectory(target.toFile());
+            FileUtils.copyDirectory(source.toFile(), target.toFile());
             p = new Player(name, color);
         } catch (Exception e) {
-            e.printStackTrace(System.err);
+            Log.error("Can not load player: " + name, e);
         }
         return p;
     }

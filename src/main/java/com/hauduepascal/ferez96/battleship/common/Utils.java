@@ -1,9 +1,18 @@
 package com.hauduepascal.ferez96.battleship.common;
 
+import com.hauduepascal.ferez96.battleship.controller.Player;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Utils {
+
+    private static final Logger Log = LoggerFactory.getLogger(Utils.class);
 
     public static Map<String, String> parseArgs(String args[]) {
         Map<String, String> ans = new LinkedHashMap<>();
@@ -31,5 +40,33 @@ public class Utils {
             }
         }
         return ans;
+    }
+
+    public static int compileCpp(Player p, String fileName) {
+        try {
+            String cmd = "g++ --static -o2 -std=c++14 -o " + p.RootDir.resolve(fileName) + " " + p.RootDir.resolve(fileName + ".cpp");
+            System.out.println("Execute cmd: " + cmd);
+            Process compiler = Runtime.getRuntime().exec(cmd);
+            Files.copy(compiler.getInputStream(), p.RootDir.resolve(fileName + ".compiler.out"), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(compiler.getErrorStream(), p.RootDir.resolve(fileName + ".compiler.err"), StandardCopyOption.REPLACE_EXISTING);
+            return compiler.waitFor();
+        } catch (IOException | InterruptedException ex) {
+            Log.error("Compile error", ex);
+            return -1;
+        }
+    }
+
+    public static int runExe(Player p, String fileName) {
+        try {
+            String cmd = p.RootDir.resolve(fileName + ".exe").toString();
+            System.out.println("Execute cmd: " + cmd);
+            Process compiler = Runtime.getRuntime().exec(cmd, null, p.RootDir.toFile());
+            Files.copy(compiler.getInputStream(), p.RootDir.resolve(fileName + ".run.out"), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(compiler.getErrorStream(), p.RootDir.resolve(fileName + ".run.err"), StandardCopyOption.REPLACE_EXISTING);
+            return compiler.waitFor();
+        } catch (IOException | InterruptedException ex) {
+            Log.error("Execute fail", ex);
+            return -1;
+        }
     }
 }

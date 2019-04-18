@@ -21,7 +21,16 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-task prepareBattle(type: JavaExec, dependsOn: ['build']) {
+test {
+    useJUnit()
+
+    maxHeapSize = '1G'
+}
+
+
+// User-defined tasks
+
+task prepareBattle(type: JavaExec, dependsOn: ['build', 'clear']) {
     group 'hdpascal'
 
     classpath = sourceSets.main.runtimeClasspath // include classpath from main project
@@ -37,3 +46,12 @@ task clear(type: JavaExec, dependsOn: ['build']) {
     args(['clear'])
 }
 
+
+task play(type: JavaExec, dependsOn: ['build']) {
+    group 'hdpascal'
+
+    classpath = sourceSets.main.runtimeClasspath // include classpath from main project
+    main = mainClassName
+    args(['play'])
+
+}

@@ -15,33 +15,29 @@ public class Player {
         }
     }
 
-    final private String name;
-    final private long id;
-    final private TeamColor color;
-    final private Path rootDir;
-
-    public TeamColor getColor() {
-        return color;
-    }
-
-    public Path getRootDir() {
-        return rootDir;
-    }
+    public final String Name;
+    public final long Id;
+    public final TeamColor Color;
+    public final Path RootDir;
 
     public Player(String name, TeamColor color) throws Exception {
-        this.id = MiniIdZen.nextId();
-        this.name = name;
-        this.color = color;
-        this.rootDir = Global.FIELD_PATH.resolve(color.toString().toLowerCase());
-        PlayerValidator.checkPlayerDir(rootDir);
+        this(name, color, false);
+    }
+
+    public Player(String name, TeamColor color, boolean checked) throws Exception {
+        this.Id = MiniIdZen.nextId();
+        this.Name = name;
+        this.Color = color;
+        this.RootDir = Global.FIELD_PATH.resolve(color.toString().toLowerCase()).toAbsolutePath();
+        if (!checked) PlayerValidator.checkPlayerDir(RootDir);
     }
 
     @Override
     public String toString() {
-        String sb = "==== " + this.color + " ====" + "\n" +
-                "Id:  \t" + this.id + "\n" +
-                "Name:\t" + this.name + "\n" +
-                "Dir: \t" + this.rootDir + "\n";
+        String sb = "==== " + this.Color + " ====" + "\n" +
+                "Id:  \t" + this.Id + "\n" +
+                "Name:\t" + this.Name + "\n" +
+                "Dir: \t" + this.RootDir + "\n";
         return sb;
     }
 }

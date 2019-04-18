@@ -1,5 +1,6 @@
 package com.hauduepascal.ferez96.battleship.validator;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,15 @@ import static org.junit.Assert.*;
 public class AuctionValidatorTest {
     Logger Log = LoggerFactory.getLogger(AuctionValidatorTest.class);
 
+    @Before
+    public void before() {
+        try {
+            Files.createDirectories(Paths.get(".tmp"));
+        } catch (IOException e) {
+            //do nothing
+        }
+    }
+
     @Test
     public void checkPrices() {
         AuctionValidator.Instance.checkPrices(Arrays.asList(10, 10, 10, 10, 10, 10, 10, 10, 10));
@@ -26,11 +36,6 @@ public class AuctionValidatorTest {
 
     @Test
     public void checkFileFormat() {
-        try {
-            Files.createDirectories(Paths.get(".tmp"));
-        } catch (IOException e) {
-            //do nothing
-        }
         try (PrintStream ps = new PrintStream(".tmp/auction1.txt")) {
             ps.println("10 10 10 10 10 10 10 10 10 10");
             assertTrue(AuctionValidator.Instance.checkFileFormat(new File(".tmp/auction1.txt")));
@@ -41,17 +46,12 @@ public class AuctionValidatorTest {
         try {
             Files.delete(Paths.get(".tmp/auction1.txt"));
         } catch (IOException e) {
-            System.err.println("Did not delete file \".tmp/auction1.txt\"");
+            Log.warn("Did not delete file \".tmp/auction1.txt\"", e);
         }
     }
 
     @Test
     public void checkFileFormat1() {
-        try {
-            Files.createDirectories(Paths.get(".tmp"));
-        } catch (IOException e) {
-            //do nothing
-        }
         try (PrintStream ps = new PrintStream(".tmp/auction1.txt")) {
             ps.println("10 10 10 10 10 10 10 10 10 10\n");
             assertTrue(AuctionValidator.Instance.checkFileFormat(new File(".tmp/auction1.txt")));
@@ -61,17 +61,12 @@ public class AuctionValidatorTest {
         try {
             Files.delete(Paths.get(".tmp/auction1.txt"));
         } catch (IOException e) {
-            System.err.println("Did not delete file \".tmp/auction1.txt\"");
+            Log.warn("Did not delete file \".tmp/auction1.txt\"", e);
         }
     }
 
     @Test
     public void checkFileFormat2() {
-        try {
-            Files.createDirectories(Paths.get(".tmp"));
-        } catch (IOException e) {
-            //do nothing
-        }
         try (PrintStream ps = new PrintStream(".tmp/auction1.txt")) {
             ps.println("10 10 10 10 10 10 10 10 10 10\nabc");
             assertFalse(AuctionValidator.Instance.checkFileFormat(new File(".tmp/auction1.txt")));

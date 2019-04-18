@@ -7,8 +7,8 @@
         </layout>
     </appender>
 
-    <logger name="" level="DEBUG"/>
-    <!--<logger name="com.hauduepascal.ferez96.battleship" level="INFO"/>-->
+    <logger name="" level="INFO"/>
+    <logger name="com.hauduepascal.ferez96.battleship" level="INFO"/>
     <logger name="com.hauduepascal.ferez96.battleship.controller.Position" level="TRACE"/>
 
 
