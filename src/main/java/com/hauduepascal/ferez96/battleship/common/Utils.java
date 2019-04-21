@@ -67,7 +67,7 @@ public class Utils {
             System.in.read();
         } catch (IOException ex) {
             Log.error("Standard IO Fail", ex);
-            System.exit(0);
+            System.exit(1);
         }
     }
 

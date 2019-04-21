@@ -53,6 +53,9 @@ task play(type: JavaExec, dependsOn: ['build']) {
     classpath = sourceSets.main.runtimeClasspath // include classpath from main project
     main = mainClassName
     standardInput = System.in
+    if(project.hasProperty('white')){
+        logger.info()
+    }
     args(['play'])
 
 }

@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Scanner;
 
 public class BattleShipMain {
     private static final Logger Log = LoggerFactory.getLogger(BattleShipMain.class);
@@ -42,18 +43,26 @@ public class BattleShipMain {
                     break;
 
                 case "play":
-                    Player w = importPlayer("AI1", TeamColor.White);
-                    if (w != null) System.out.println(w);
-                    Player b = importPlayer("AI2", TeamColor.Black);
-                    if (b != null) System.out.println(b);
+                    try (Scanner scanner = new Scanner(Global.PROJECT_PATH.resolve("players.txt"))) {
+                        String p1 = scanner.nextLine();
+                        String p2 = scanner.nextLine();
+                        Player w = importPlayer(p1, TeamColor.White);
+                        Player b = importPlayer(p2, TeamColor.Black);
 
-                    if (b == null || w == null) System.exit(1);
-                    else {
-                        Judge judge = new Judge();
-                        judge.importPlayers(b, w);
-                        judge.phrase1();
-                        judge.phrase2();
-                        judge.phrase3();
+                        if (b == null || w == null) System.exit(1);
+                        else {
+                            System.out.println(w);
+                            System.out.println(b);
+                            Judge judge = new Judge();
+                            judge.importPlayers(w, b);
+                            Utils.pressEnter2Continue();
+                            judge.phrase1();
+                            judge.phrase2();
+                            judge.phrase3();
+                        }
+                    } catch (Exception e) {
+                        Log.error("", e);
+                        System.exit(1);
                     }
                     break;
                 default:
@@ -87,6 +96,9 @@ public class BattleShipMain {
             FileUtils.deleteDirectory(target.toFile());
             FileUtils.copyDirectory(source.toFile(), target.toFile());
             p = new Player(name, color);
+            // compile codes
+            Utils.compileCpp(p, "SET");
+            Utils.compileCpp(p, "PLAY");
         } catch (Exception e) {
             Log.error("Can not load player: " + name, e);
         }

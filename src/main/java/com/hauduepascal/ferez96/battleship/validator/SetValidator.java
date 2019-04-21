@@ -10,7 +10,7 @@ import java.util.Scanner;
 public class SetValidator {
     private static final Logger Log = LoggerFactory.getLogger(SetValidator.class);
 
-    public static boolean validPlayerShips(Player p) {
+    public static boolean checkOutputFile(Player p) {
         try (Scanner scOut = new Scanner(p.RootDir.resolve("SET.OUT"))) {
             int m = p.getShipsCount(), id = p.Color.id;
             int _id = scOut.nextInt();

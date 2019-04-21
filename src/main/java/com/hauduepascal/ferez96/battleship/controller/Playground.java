@@ -1,14 +1,18 @@
 package com.hauduepascal.ferez96.battleship.controller;
 
+
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Playground {
+public class Playground implements ShipDestroyListener {
 
     private final int size;
     private final int nRock;
     private final Map<Position, ICell> Playground = new HashMap<>();
+    public static final BlankCell BLANK_CELL = new BlankCell();
+    public static final Rock ROCK = new Rock();
+
 
     public Playground(int size, int nRock) {
         this.size = size;
@@ -47,6 +51,11 @@ public class Playground {
             ps.println("|");
             ps.println(line);
         }
+    }
+
+    @Override
+    public void onShipDestroy(Ship ship) {
+        Playground.put(ship.pos, BLANK_CELL);
     }
 
     public interface ICell extends java.io.Serializable {

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 
 public class Position {
+    public static final Position ZERO = new Position(0, 0);
     private static final Pool POOL = new Pool();
     public final int x;
     public final int y;
@@ -42,6 +43,7 @@ public class Position {
         }
 
         private Position get(int x, int y) {
+            if (x <= 0 || y <= 0) return null;
             if (contains(x, y)) return POOL.get(x).get(y);
             else return pooling(new Position(x, y));
         }

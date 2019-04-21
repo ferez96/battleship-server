@@ -3,10 +3,11 @@ package com.hauduepascal.ferez96.battleship.controller;
 import com.hauduepascal.ferez96.battleship.app.Global;
 import com.hauduepascal.ferez96.battleship.enums.TeamColor;
 import com.hauduepascal.ferez96.battleship.validator.PlayerValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Player {
 
@@ -18,6 +19,7 @@ public class Player {
         }
     }
 
+    private static final Logger Log = LoggerFactory.getLogger(Player.class);
     public final String Name;
     public final long Id;
     public final TeamColor Color;
@@ -36,14 +38,80 @@ public class Player {
         if (!checked) PlayerValidator.checkPlayerDir(RootDir);
     }
 
-    public boolean addShip(Ship ship) {
+    boolean addShip(Ship ship) {
         int id = ships.size() + 1;
-        Ship myShip = new Ship(id, ship.getHp(), ship.atk, ship.range);
+        Ship myShip = new Ship(id, ship.getHp(), ship.atk, ship.range, this);
         return ships.add(myShip);
     }
 
-    public Ship getShip(int i) {
+    Ship getShip(int i) {
         return ships.get(i);
+    }
+
+    public void move(BaseCommand cmd, Playground pg) {
+        if (cmd instanceof RunCommand) {
+            RunCommand rc = (RunCommand) cmd;
+            Optional<Ship> op = ships.stream().filter(x -> x.pos.equals(rc.pos)).findAny();
+            if (op.isPresent()) {
+                Ship ship = op.get();
+                Position nextPos = rc.getNextPosition();
+                Playground.ICell nextCell = pg.get(nextPos);
+                if (nextCell == null) {
+                    Log.warn("Invalid command: new position out if index pos=" + nextPos);
+                    rc.validCommand = false;
+                } else if (nextCell instanceof Ship) {
+                    Log.info("Crash with another ship");
+                    ((Ship) nextCell).destroy();
+                    ship.destroy();
+                } else if (nextCell instanceof Playground.BlankCell) {
+                    Log.info("Move ship from " + rc.pos + " to " + nextPos);
+                    pg.set(rc.pos, Playground.BLANK_CELL);
+                    pg.set(nextPos, ship);
+                    ship.pos = nextPos;
+                } else {
+                    Log.error("Unhandled");
+                    rc.validCommand = false;
+                }
+            } else {
+                Log.warn("Invalid command: ship not found, pos=" + rc.pos);
+                rc.validCommand = false;
+            }
+        }
+    }
+
+    public void fire(BaseCommand cmd, Playground pg) {
+        if (cmd instanceof FireCommand) {
+            FireCommand fc = (FireCommand) cmd;
+            Optional<Ship> op = ships.stream().filter(x -> x.pos.equals(fc.src)).findAny();
+            if (op.isPresent()) {
+                Ship ship = op.get();
+                Playground.ICell nextCell = pg.get(fc.target);
+                if (nextCell == null) {
+                    Log.info("Fire to nowhere pos=" + fc.target);
+                } else if (nextCell instanceof Ship) {
+                    int damage = (int) Math.ceil(1.0 * ship.hp * ship.atk / 10);
+                    Log.info(ship.toMapInpString() + " fired " + damage + " to " + fc.target);
+                    ((Ship) nextCell).takeDamage(damage);
+                } else if (nextCell instanceof Playground.BlankCell) {
+                    Log.info("Fire to blank cell pos=" + fc.target);
+                } else {
+                    Log.error("Unhandled");
+                    fc.validCommand = false;
+                }
+            } else {
+                Log.warn("Invalid command: ship not found, pos=" + fc.src);
+                fc.validCommand = false;
+            }
+        }
+    }
+
+
+    public int getAliveShipsCount() {
+        int cnt = 0;
+        for (Ship ship : ships) {
+            if (ship.hp > 0) cnt++;
+        }
+        return cnt;
     }
 
     public int getShipsCount() {
