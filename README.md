@@ -8,6 +8,7 @@
 
 * Java JDK 8
 * gradle 4.9
+* MinGW or CygWin
 
 ### Prepare a match
 
@@ -21,7 +22,7 @@ You can change that files like you want
 
 ### Run a match
 
-Copy your and your opponents source code into `player/AI1` and `player/AI2`
+Copy your and your opponents source code into `player/AI1` and `player/AI2`.
 
 You must have 3 files:
 * SET.CPP
