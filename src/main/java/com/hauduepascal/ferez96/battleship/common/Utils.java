@@ -6,13 +6,31 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Utils {
 
     private static final Logger Log = LoggerFactory.getLogger(Utils.class);
+
+    public static Path getFilePath(Path dir, String filename) {
+        try {
+            List<Path> matchPaths = Files.list(dir)
+                    .filter(x -> x.getFileName().toString().equalsIgnoreCase(filename))
+                    .collect(Collectors.toList());
+            if (matchPaths.size() >= 1) {
+                return matchPaths.get(0);
+            } else {
+                throw new IOException(filename + " is not found");
+            }
+        } catch (IOException e) {
+            return null;
+        }
+    }
 
     public static Map<String, String> parseArgs(String args[]) {
         Map<String, String> ans = new LinkedHashMap<>();
@@ -42,9 +60,10 @@ public class Utils {
         return ans;
     }
 
+
     public static int compileCpp(Player p, String fileName) {
         try {
-            String cmd = "g++ --static -o2 -std=c++14 -o " + p.RootDir.resolve(fileName) + " " + p.RootDir.resolve(fileName + ".cpp");
+            String cmd = "g++ --static -o2 -std=c++14 -o " + p.RootDir.resolve(fileName) + ".exe " + p.RootDir.resolve(fileName + ".cpp");
             System.out.println("Execute cmd: " + cmd);
             Process compiler = Runtime.getRuntime().exec(cmd);
             Files.copy(compiler.getInputStream(), p.RootDir.resolve(fileName + ".compiler.out"), StandardCopyOption.REPLACE_EXISTING);

@@ -71,6 +71,12 @@ public class BattleShipMain {
         System.out.println("\tclear\t-\tXoa resource cu");
     }
 
+    /**
+     * Import team <code>name</code> as <code>color</code> player
+     * @param name name of the team will join the match
+     * @param color team color
+     * @return the Player Object contain core information
+     */
     private static Player importPlayer(String name, TeamColor color) {
         Player p = null;
         try {

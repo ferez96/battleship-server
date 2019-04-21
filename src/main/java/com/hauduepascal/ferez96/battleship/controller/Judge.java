@@ -16,6 +16,7 @@ import java.util.Scanner;
 public class Judge {
 
     private Player p1, p2;
+    private Playground pg;
     private static final Logger Log = LoggerFactory.getLogger(Judge.class);
 
 
@@ -73,8 +74,8 @@ public class Judge {
         }
 
         // Write result into SET.INP
-        try (PrintStream ps1 = new PrintStream(p1.RootDir.resolve("SET.inp").toFile());
-             PrintStream ps2 = new PrintStream(p2.RootDir.resolve("SET.inp").toFile())) {
+        try (PrintStream ps1 = new PrintStream(p1.RootDir.resolve("SET.INP").toFile());
+             PrintStream ps2 = new PrintStream(p2.RootDir.resolve("SET.OUT").toFile())) {
             ps1.printf("%d %d %d\n", s1.size(), s2.size(), p1.Color.id);
             s1.forEach(ps1::println);
             ps2.printf("%d %d %d\n", s2.size(), s1.size(), p2.Color.id);
@@ -89,6 +90,28 @@ public class Judge {
         Log.info("run " + p1.Name + " return " + Utils.runExe(p1, "SET"));
         Log.info("compiler " + p2.Name + " return " + Utils.compileCpp(p2, "SET"));
         Log.info("run " + p2.Name + " return " + Utils.runExe(p2, "SET"));
+
+        // Set boats on map
+        try (Scanner sc = new Scanner(Global.FIELD_PATH.resolve("map.txt"))) {
+            int size = sc.nextInt();
+            int nRock = sc.nextInt();
+            pg = new Playground(size, nRock);
+            for (int i = 0; i < nRock; ++i) {
+                int x = sc.nextInt(), y = sc.nextInt();
+                pg.set(Position.get(x,y),new Playground.Rock());
+            }
+        } catch (IOException e) {
+            Log.error("", e);
+            pg = null;
+        }
+
+        if (pg != null) {
+            try(Scanner sc = new Scanner(p1.RootDir.resolve("SET.out"))){
+
+            }catch (IOException ex){
+                // do nothing
+            }
+        }
     }
 
     public void phrase3() {

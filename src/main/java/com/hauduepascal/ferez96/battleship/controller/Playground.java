@@ -21,6 +21,10 @@ public class Playground {
         return Playground.getOrDefault(pos, null);
     }
 
+    public ICell set(Position pos, ICell cell) {
+        return Playground.put(pos, cell);
+    }
+
     public int getSize() {
         return size;
     }
