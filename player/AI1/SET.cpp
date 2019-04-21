@@ -19,19 +19,15 @@ int main(){
         printf("%d\n",id);
         for (i=4;i>=1;i--)
             for (j=1;j<=8;j++){
-                printf("%d %d\n",i,j);
-                n--;
-                if (n==0)
-                    exit(0);
-                }
+                printf("%d %d\n",i,j);                
+                if (!n--) exit(0);
+            }
     } else {
         printf("%d\n",id);
         for (i=5;i<=8;i++)
             for (j=1;j<=8;j++){
-                printf("%d %d\n",i,j);
-                m--;
-                if (m==0)
-                    exit(0);
+                printf("%d %d\n",i,j);                
+                if (!n--) exit(0);
             }
     }
 }

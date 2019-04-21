@@ -60,6 +60,17 @@ public class Utils {
         return ans;
     }
 
+    public static void pressEnter2Continue() {
+        try {
+            System.in.skip(10);
+            System.out.println("Press 'Enter' to continue");
+            System.in.read();
+        } catch (IOException ex) {
+            Log.error("Standard IO Fail", ex);
+            System.exit(0);
+        }
+    }
+
 
     public static int compileCpp(Player p, String fileName) {
         try {

@@ -9,7 +9,7 @@
 
     <logger name="" level="INFO"/>
     <logger name="com.hauduepascal.ferez96.battleship" level="INFO"/>
-    <logger name="com.hauduepascal.ferez96.battleship.controller.Position" level="TRACE"/>
+<!--    <logger name="com.hauduepascal.ferez96.battleship.controller.Position" level="TRACE"/>-->
 
 
     <root level="debug">

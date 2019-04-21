@@ -30,7 +30,7 @@ test {
 
 // User-defined tasks
 
-task prepareBattle(type: JavaExec, dependsOn: ['build', 'clear']) {
+task prepare(type: JavaExec, dependsOn: ['build', 'clear']) {
     group 'hdpascal'
 
     classpath = sourceSets.main.runtimeClasspath // include classpath from main project
@@ -52,6 +52,7 @@ task play(type: JavaExec, dependsOn: ['build']) {
 
     classpath = sourceSets.main.runtimeClasspath // include classpath from main project
     main = mainClassName
+    standardInput = System.in
     args(['play'])
 
 }

@@ -32,7 +32,7 @@ int main(){
         printf("%d\n",id);
         srand((int) time(0));
         for (i=1;i<=10000;i++){
-            l=rand()%4+26;
+            l=rand()%4+5;
             r=rand()%8+1;
             if (kt[l][r]==0){
                 kt[l][r]=1;

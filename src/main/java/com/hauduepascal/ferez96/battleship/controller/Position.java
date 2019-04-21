@@ -46,4 +46,9 @@ public class Position {
             else return pooling(new Position(x, y));
         }
     }
+
+    @Override
+    public String toString() {
+        return String.format("(%2d,%2d)", x, y);
+    }
 }

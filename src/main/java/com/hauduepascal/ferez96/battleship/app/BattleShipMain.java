@@ -73,7 +73,8 @@ public class BattleShipMain {
 
     /**
      * Import team <code>name</code> as <code>color</code> player
-     * @param name name of the team will join the match
+     *
+     * @param name  name of the team will join the match
      * @param color team color
      * @return the Player Object contain core information
      */
@@ -103,17 +104,6 @@ public class BattleShipMain {
             System.exit(1);
         }
 
-        // prepare ships
-        try (PrintStream ps = new PrintStream(Global.FIELD_PATH.resolve("ships.txt").toFile())) {
-            int nShip = Maps.getOrDefault(params, "nShip", 10);
-            Ship[] ships = new Ship[nShip];
-            for (int i = 0; i < nShip; ++i) ships[i] = new Ship();
-            for (int i = 0; i < nShip; ++i) ps.println(ships[i]);
-        } catch (FileNotFoundException e) {
-            Log.error("Can not write ships.txt", e);
-            System.exit(1);
-        }
-
         // prepare maps
         boolean createMap = Maps.getOrDefault(params, "create-map", true);
         if (createMap)
@@ -124,13 +114,31 @@ public class BattleShipMain {
                 ps.println(pg.getSize() + " " + pg.getRockCount());
                 for (int i = 1; i <= mapSize; ++i) {
                     for (int j = 1; j <= mapSize; ++j)
-                        if (pg.get(Position.get(i, j)) instanceof Playground.Rock)
-                            ps.printf("%d %d\n", i, j);
+                        if (pg.get(Position.get(i, j)) instanceof Playground.Rock) ps.print("#");
+                        else ps.print(".");
+                    ps.print("\n");
                 }
+
+                System.out.println("Generated grid map:");
+                pg.prettyPrint(System.out);
             } catch (FileNotFoundException e) {
                 Log.error("Can not write map.txt", e);
                 System.exit(1);
             }
+
+        // prepare ships
+        try (PrintStream ps = new PrintStream(Global.FIELD_PATH.resolve("ships.txt").toFile())) {
+            int nShip = Maps.getOrDefault(params, "nShip", 10);
+            Ship[] ships = new Ship[nShip];
+            for (int i = 0; i < nShip; ++i) ships[i] = new Ship();
+            for (int i = 0; i < nShip; ++i) ps.println(ships[i]);
+
+            System.out.println("Generated ships:");
+            for (int i = 0; i < nShip; ++i) System.out.println(ships[i].toBeautifulString());
+        } catch (FileNotFoundException e) {
+            Log.error("Can not write ships.txt", e);
+            System.exit(1);
+        }
 
         return 0;
     }

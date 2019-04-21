@@ -1,5 +1,6 @@
 package com.hauduepascal.ferez96.battleship.controller;
 
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,20 +34,36 @@ public class Playground {
         return nRock;
     }
 
+    public void prettyPrint(PrintStream ps) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i <= size; ++i) sb.append("+---");
+        sb.append("+");
+        String line = sb.toString();
+        ps.println(line);
+        for (int i = 1; i <= size; ++i) {
+            for (int j = 1; j <= size; ++j) {
+                ps.printf("|%3s", Playground.get(Position.get(i, j)).toPrettyString());
+            }
+            ps.println("|");
+            ps.println(line);
+        }
+    }
+
     public interface ICell extends java.io.Serializable {
+        String toPrettyString();
     }
 
     public static class BlankCell implements ICell {
         @Override
-        public String toString() {
-            return ".";
+        public String toPrettyString() {
+            return "   ";
         }
     }
 
     public static class Rock implements ICell {
         @Override
-        public String toString() {
-            return "#";
+        public String toPrettyString() {
+            return " # ";
         }
     }
 }
