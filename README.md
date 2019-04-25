@@ -1,34 +1,63 @@
-# Pascal Descendants 2019 - Round 3
+# Hậu duệ Pascal 2019 - Vòng 3
 
-## Battle Ship Judge System
+## Hệ thống chấm bài
 
-> Note: if you use Windows, use `gradlew.bat` instead of `gradlew`
+LVersion: v1.2
+
+> Note: nếu bạn sử dụng Windows, hãy chạy `gradlew.bat` thay vì `gradlew`
 
 ### Requirement
-
+Bạn cần các phần mềm sau để có thể chạy chương trình
 * Java JDK 8
 * gradle 4.9
-* MinGW or CygWin
+* mingw hoặc cygwin (dành cho Windows)
 
-### Prepare a match
+### Kiểm tra môi trường
 
-Run `./gradlew clear` to clean old `battleField/`, or you can just delete the folder yourself.
+Giả sử bạn đã tải toàn bộ source code về thành công.
 
-Run `./gradlew prepare` to create new `battleField/`. In the generated-folder you will find:
-* map.txt: a sample map
-* ships.txt: a random 10 battle ships for the play
+#### Đối với Windows
+Mở `Windows PowerShell` (hãy từ bỏ `Command Prompt` từ bây giờ)
+```bash
+java -version
+gradle --version
+g++ --version
+```
+Bạn sẽ muốn thấy version của các chương trình trên, nếu không, có thể bạn cài thiếu, hoặc quên chưa [set PATH environment variables](https://www.computerhope.com/issues/ch000549.htm)
 
-You can change that files like you want 
+#### Đối với Ubuntu
+Nhấn `Ctrl+Alt+T` để mở giao diện Terminal
+nhập lệnh sau:
+```bash
+sudo apt install openjdk-8-jdk gradle
+```
 
-### Run a match
+### Chạy thử chương trình lần đầu tiên
 
-Copy your and your opponents source code into `player/AI1` and `player/AI2`.
+```bash
+cd /path/to/battleship-server
+gradle wrapper
+./gradlew build
+./gradlew clear
+./gradlew prepare
+./gradlew play
+```
 
-You must have 3 files:
-* SET.CPP
-* PLAY.CPP
-* prices.txt
+Nếu chạy đúng, các bạn sẽ nhận được kết quả tương tự thế này: ![first-run.png](first-run.png)
 
-Run `./gradlew play` and see the result
+### Chuẩn bị cho trận đấu
+
+Chạy lệnh `./gradlew clear` để xóa thư mục `BATTLE_FIELD/` từ trận đấu trước hoặc bạn có thể tự xóa bằng tay.
+
+Chạy lệnh `./gradlew prepare` để tạo thư mục `BATTLE_FIELD/` mới.
+Chương trình cũng tự động sinh ra fil: `ships.txt` chứa thông tin 5 thuyền chiến được tạo ngẫu nhiên theo đúng format. nếu bạn muốn sửa nội dung của file này theo ý mình, hãy chú ý giữ đúng format.
+
+### Chạy trận đấu
+Chúng tôi cung cấp 2 AI mẫu tại thư mục [player/AI1](player/AI1) và [player/AI2](player/AI2)
+Bạn có thể thay đổi source code của AI mẫu, hoặc tự tạo thư mục mới cho AI của mình.
+Chỉnh sửa player sẽ đấu với nhau tại file [players.txt](players.txt)
+Chạy `./gradlew play` và tận hưởng kết quả
+
+> Note: Nếu bạn muốn in nội dung này ra file `result.txt` thay vì màn hình, hãy chạy: `./gradlew play >result.txt 2>&1 && tail -n22 result.txt`. Nếu chương trình in ra turn cuối và BUILD SUCCESSFUL là ổn.
 
 Have Fun!
