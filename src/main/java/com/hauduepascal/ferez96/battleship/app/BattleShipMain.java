@@ -35,13 +35,8 @@ public class BattleShipMain {
                     if (retVal != 0) System.exit(retVal);
                     break;
                 case "clear":
-                    try {
-                        FileUtils.deleteDirectory(Global.FIELD_PATH.toFile());
-                    } catch (IOException e) {
-                        Log.warn("Delete attempt failed", e);
-                    }
-                    break;
-
+                    clear();
+                    return;
                 case "play":
                     try (Scanner scanner = new Scanner(Global.PROJECT_PATH.resolve("players.txt"))) {
                         String p1 = scanner.nextLine();
@@ -55,7 +50,7 @@ public class BattleShipMain {
                             System.out.println(b);
                             Judge judge = new Judge();
                             judge.importPlayers(w, b);
-                            Utils.pressEnter2Continue();
+//                            Utils.pressEnter2Continue();
                             judge.phrase1();
                             judge.phrase2();
                             judge.phrase3();
@@ -85,18 +80,19 @@ public class BattleShipMain {
      *
      * @param name  name of the team will join the match
      * @param color team color
-     * @return the Player Object contain core information
+     * @return the Player Object contain core information, return null if can not import the player
      */
     private static Player importPlayer(String name, TeamColor color) {
         Player p = null;
         try {
-            Path source = Global.PROJECT_PATH.resolve("player").resolve(name);
+            Path source = Global.PLAYER_DIR.resolve(name);
             Path target = Global.FIELD_PATH.resolve(color.toString());
+
             PlayerValidator.checkPlayerDir(source);
-            FileUtils.deleteDirectory(target.toFile());
-            FileUtils.copyDirectory(source.toFile(), target.toFile());
+            FileUtils.deleteDirectory(target.toFile()); // remove old directory
+            FileUtils.copyDirectory(source.toFile(), target.toFile()); // copy
             p = new Player(name, color);
-            // compile codes
+            // compile src
             Utils.compileCpp(p, "SET");
             Utils.compileCpp(p, "PLAY");
         } catch (Exception e) {
@@ -105,18 +101,29 @@ public class BattleShipMain {
         return p;
     }
 
+    private static void clear() {
+        int attempt = 1;
+        while (attempt <= 3) {
+            try {
+                FileUtils.deleteDirectory(Global.FIELD_PATH.toFile());
+                return;
+            } catch (IOException e) {
+                Log.warn("Delete attempt " + attempt + " failed", e);
+                attempt--;
+            }
+        }
+    }
 
     private static int prepare(Map<String, String> params) {
         try {
             Files.createDirectories(Global.FIELD_PATH);
-            Files.createDirectories(Global.FIELD_PATH.resolve("black"));
-            Files.createDirectories(Global.FIELD_PATH.resolve("white"));
         } catch (IOException e) {
-            Log.error("Can not create battle directories", e);
+            Log.error("Can not init battle directories", e);
             System.exit(1);
         }
 
-        // prepare maps
+        // Sample not prepare map
+        /*// prepare maps
         boolean createMap = Maps.getOrDefault(params, "create-map", true);
         if (createMap)
             try (PrintStream ps = new PrintStream(Global.FIELD_PATH.resolve("map.txt").toFile())) {
@@ -136,11 +143,11 @@ public class BattleShipMain {
             } catch (FileNotFoundException e) {
                 Log.error("Can not write map.txt", e);
                 System.exit(1);
-            }
+            }*/
 
         // prepare ships
         try (PrintStream ps = new PrintStream(Global.FIELD_PATH.resolve("ships.txt").toFile())) {
-            int nShip = Maps.getOrDefault(params, "nShip", 10);
+            int nShip = 5; // 5 ships
             Ship[] ships = new Ship[nShip];
             for (int i = 0; i < nShip; ++i) ships[i] = new Ship();
             for (int i = 0; i < nShip; ++i) ps.println(ships[i]);

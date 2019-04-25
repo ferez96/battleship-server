@@ -36,7 +36,7 @@ public class Ship implements ICell {
     }
 
     public Ship() {
-        this(-1, rand(5, 10), rand(1, 7), rand(1, 7), null);
+        this(-1, rand(5, 10), rand(1, 7), rand(5, 10), null);
     }
 
     public void addShipDestroyListener(ShipDestroyListener listener) {
