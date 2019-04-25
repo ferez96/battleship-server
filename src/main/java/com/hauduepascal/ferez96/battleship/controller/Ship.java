@@ -16,12 +16,13 @@ public class Ship implements ICell {
     private List<ShipDestroyListener> shipDestroyListeners = new ArrayList<>();
 
     final int id;
-    final Player owner;
+    private Player owner = null;
     int hp;
     final int atk;
     final int range;
     Position pos = Position.ZERO;
     int status = 0;
+    private Playground playground;
 
     static private int rand(int s, int t) {
         return RANDOM.nextInt(t - s + 1) + s;
@@ -36,7 +37,7 @@ public class Ship implements ICell {
     }
 
     public Ship() {
-        this(-1, rand(5, 10), rand(1, 7), rand(5, 10), null);
+        this(-1, 10, rand(1, 7), rand(1, 7), null);
     }
 
     public void addShipDestroyListener(ShipDestroyListener listener) {
@@ -46,12 +47,25 @@ public class Ship implements ICell {
     void destroy() {
         Log.info("Ship " + toMapInpString() + " has been destroyed");
         shipDestroyListeners.forEach(x -> x.onShipDestroy(this));
+        playground.onShipDestroy(this);
         hp = 0;
         pos = Position.ZERO;
     }
 
     public int getHp() {
         return hp;
+    }
+
+    public boolean setOwner(Player owner) {
+        if (this.owner == null) {
+            this.owner = owner;
+            return true;
+        }
+        return false;
+    }
+
+    public Player getOwner() {
+        return owner;
     }
 
     @Override
@@ -77,6 +91,14 @@ public class Ship implements ICell {
         if (d >= hp) destroy();
         else hp -= d;
         status = 1;
+    }
+
+    public void setPlayground(Playground playground) {
+        this.playground = playground;
+    }
+
+    public Playground getPlayground() {
+        return playground;
     }
 }
 

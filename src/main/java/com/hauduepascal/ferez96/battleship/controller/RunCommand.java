@@ -3,9 +3,12 @@ package com.hauduepascal.ferez96.battleship.controller;
 import java.util.Scanner;
 
 public class RunCommand extends BaseCommand {
-    int code = 0;
     Position pos;
     char h;
+
+    {
+        code = 0;
+    }
 
     @Override
     public void _import(Scanner scanner) {

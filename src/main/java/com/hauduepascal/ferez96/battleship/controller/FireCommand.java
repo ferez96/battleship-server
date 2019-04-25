@@ -3,9 +3,12 @@ package com.hauduepascal.ferez96.battleship.controller;
 import java.util.Scanner;
 
 public class FireCommand extends BaseCommand {
-    int code = 1;
     Position src;
     Position target;
+
+    {
+        code = 1;
+    }
 
     @Override
     public void _import(Scanner scanner) {

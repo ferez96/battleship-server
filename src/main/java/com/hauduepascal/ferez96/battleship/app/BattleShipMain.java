@@ -1,7 +1,6 @@
 package com.hauduepascal.ferez96.battleship.app;
 
 
-import com.hauduepascal.ferez96.battleship.common.Maps;
 import com.hauduepascal.ferez96.battleship.common.Utils;
 import com.hauduepascal.ferez96.battleship.controller.*;
 import com.hauduepascal.ferez96.battleship.enums.TeamColor;
@@ -51,9 +50,9 @@ public class BattleShipMain {
                             Judge judge = new Judge();
                             judge.importPlayers(w, b);
 //                            Utils.pressEnter2Continue();
-                            judge.phrase1();
-                            judge.phrase2();
-                            judge.phrase3();
+                            judge.phase1();
+                            judge.phase2();
+                            judge.phase3();
                         }
                     } catch (Exception e) {
                         Log.error("", e);

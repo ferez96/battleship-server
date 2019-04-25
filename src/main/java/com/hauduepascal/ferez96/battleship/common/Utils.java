@@ -1,6 +1,7 @@
 package com.hauduepascal.ferez96.battleship.common;
 
 import com.hauduepascal.ferez96.battleship.controller.Player;
+import com.hauduepascal.ferez96.battleship.controller.Position;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,10 @@ public class Utils {
         } catch (IOException e) {
             return null;
         }
+    }
+
+    public static int manhattanDistance(Position A, Position B) {
+        return Math.abs(A.x - B.x) + Math.abs(A.y - B.y);
     }
 
     public static Map<String, String> parseArgs(String args[]) {

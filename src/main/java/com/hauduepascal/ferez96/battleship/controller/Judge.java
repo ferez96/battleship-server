@@ -1,6 +1,7 @@
 package com.hauduepascal.ferez96.battleship.controller;
 
 import com.hauduepascal.ferez96.battleship.app.Global;
+
 import com.hauduepascal.ferez96.battleship.common.Utils;
 import com.hauduepascal.ferez96.battleship.controller.Playground.BlankCell;
 import com.hauduepascal.ferez96.battleship.controller.Playground.ICell;
@@ -13,9 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Judge {
 
@@ -30,20 +29,20 @@ public class Judge {
         this.p2 = p2;
     }
 
-    public void phrase1() {
-        System.out.println("=== Phrase 1: Dau gia tau");
+    public void phase1() {
+        System.out.println("=== phase 1: Dau gia tau");
 
-        //load ships
-        Ship[] ships = new Ship[10];
+        //load 5 ships
+        Ship[] ships = new Ship[Global.N_SHIPS];
         try (Scanner sc = new Scanner(Global.FIELD_PATH.resolve("ships.txt"))) {
-            for (int i = 0; i < 10; ++i) {
+            for (int i = 0; i < ships.length; ++i) {
                 int hp = sc.nextInt(), atk = sc.nextInt(), range = sc.nextInt();
                 ships[i] = new Ship(1, hp, atk, range, null);
                 Log.info("Found ship: " + ships[i].toBeautifulString());
             }
         } catch (IOException e) {
             Log.warn("Can not load ships, random created some");
-            for (int i = 0; i < 10; ++i) ships[i] = new Ship();
+            for (int i = 0; i < ships.length; ++i) ships[i] = new Ship();
         }
 
         // Load prices
@@ -60,7 +59,7 @@ public class Judge {
         // Calculating
         System.out.println("======  Result ======");
         List<Ship> s1 = new ArrayList<>(), s2 = new ArrayList<>();
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < Global.N_SHIPS; ++i) {
             int pr1 = prices1.get(i);
             int pr2 = prices2.get(i);
             if (pr1 < pr2) {
@@ -77,8 +76,6 @@ public class Judge {
                 s2.add(ships[i]);
             }
         }
-        s1.forEach(p1::addShip);
-        s2.forEach(p2::addShip);
 
         // Write result into SET.INP
         try (PrintStream ps1 = new PrintStream(p1.RootDir.resolve("SET.INP").toFile());
@@ -95,27 +92,12 @@ public class Judge {
         }
     }
 
-    public void phrase2() {
+    public void phase2() {
         System.out.println();
-        System.out.println("======= Phrase 2 =========");
+        System.out.println("======= phase 2 =========");
 
-        // Load map
-        try (Scanner sc = new Scanner(Global.FIELD_PATH.resolve("map.txt"))) {
-            int size = sc.nextInt();
-            int nRock = sc.nextInt();
-            pg = new Playground(size, nRock);
-            sc.nextLine();
-            for (int i = 1; i <= size; ++i) {
-                String line = sc.nextLine();
-                for (int j = 1; j <= size; ++j)
-                    pg.set(Position.get(i, j), line.charAt(j - 1) == '.' ? new BlankCell() : new Playground.Rock());
-            }
-            System.out.println("Map loaded");
-            pg.prettyPrint(System.out);
-        } catch (IOException e) {
-            Log.error("", e);
-            pg = null;
-        }
+        // Initialize map 8x8 no rocks
+        pg = new Playground(8, 0);
 
         // Load ships
         if (pg != null) { // if Playground is loaded
@@ -130,23 +112,43 @@ public class Judge {
 
             if (SetValidator.checkOutputFile(p1) && SetValidator.checkOutputFile(p2)) {
                 for (Player p : new Player[]{p1, p2}) {
-                    try (Scanner sc = new Scanner(p.RootDir.resolve("SET.OUT"))) {
-                        int colorId = sc.nextInt();
-                        assert (colorId == p.Color.id);
+                    try (Scanner scInp = new Scanner(p.RootDir.resolve("SET.INP"));
+                         Scanner scOut = new Scanner(p.RootDir.resolve("SET.OUT"))) {
+                        int colorId = scOut.nextInt();
+                        if (colorId != p.Color.id) {
+                            System.out.println("Wrong color id:" + colorId + ", expect:" + p.Color.id);
+                            System.exit(1);
+                        }
                         int lb = colorId == TeamColor.White.id ? 1 : 5;
                         int up = colorId == TeamColor.White.id ? 4 : 8;
-                        for (int i = 0; i < p.getShipsCount(); ++i) {
-                            Ship ship = p.getShip(i);
-                            int x = sc.nextInt(), y = sc.nextInt();
-                            Position pos = Position.get(x, y);
-                            if (x >= lb && x <= up && y >= 1 && y <= 8 && pg.get(pos) instanceof BlankCell) {
-                                pg.set(pos, ship);
-                                ship.addShipDestroyListener(pg);
-                                ship.pos = pos;
-                                Log.info("Ship " + i + " place at " + pos);
-                            } else {
-                                Log.warn("Ship " + i + " can not place at " + pos + " and has been destroyed");
-                                ship.destroy();
+                        int nShips = scInp.nextInt();
+                        int hp[] = new int[nShips];
+                        int atk[] = new int[nShips];
+                        int range[] = new int[nShips];
+                        Position pos[] = new Position[nShips];
+                        boolean flag[] = new boolean[nShips];
+                        for (int i = 0; i < nShips; ++i) {
+                            hp[i] = scInp.nextInt();
+                            atk[i] = scInp.nextInt();
+                            range[i] = scInp.nextInt();
+                            int x = scOut.nextInt(), y = scOut.nextInt();
+                            pos[i] = Position.get(x, y);
+                            flag[i] = true;
+                        }
+                        for (int i = 0; i < nShips; ++i)
+                            for (int j = i + 1; j < nShips; ++j)
+                                if (pos[i].equals(pos[j])) {
+                                    flag[i] = false;
+                                    flag[j] = false;
+                                }
+                        for (int i = 0; i < nShips; ++i) {
+                            if (flag[i]) {
+                                Ship ship = new Ship(i, hp[i], atk[i], range[i], null);
+                                ship.setPlayground(pg);
+                                ship.pos = pos[i];
+                                pg.set(pos[i], ship);
+                                p.addShip(ship);
+                                Log.info(String.format("Player %s placed ship %s at %s", p.Name, ship.toBeautifulString(), pos[i]));
                             }
                         }
                     } catch (IOException ex) {
@@ -154,20 +156,15 @@ public class Judge {
                     }
                 }
 
-                System.out.println("End phrase 2");
+                System.out.println("End phase 2");
                 pg.prettyPrint(System.out);
                 writeReport();
             }
         } else System.exit(1);
     }
 
-    public void phrase3() {
+    public void phase3() {
         PrintStream logPs = null;
-        try {
-            logPs = new PrintStream(Global.FIELD_PATH.resolve("result.txt").toFile());
-        } catch (IOException e) {
-            Log.warn("Can not create file result.txt", e);
-        }
         //
         for (int t = 1; t <= 50; ++t) {
             if (p1.getAliveShipsCount() == 0 || p2.getAliveShipsCount() == 0) {
@@ -255,7 +252,7 @@ public class Judge {
         List<Integer> prices = null;
         try (Scanner sc = new Scanner(path)) {
             prices = new ArrayList<>();
-            for (int i = 0; i < 10; ++i) prices.add(sc.nextInt());
+            while (sc.hasNextInt()) prices.add(sc.nextInt());
         } catch (IOException ex) {
             // must pass
         }

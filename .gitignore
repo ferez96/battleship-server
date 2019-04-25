@@ -3,7 +3,7 @@ BATTLE_FIELD/
 player/
 !player/AI1
 !player/AI2
-.tmp/
+.tmp
 
 
 local.properties

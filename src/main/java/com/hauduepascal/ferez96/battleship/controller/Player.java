@@ -1,6 +1,7 @@
 package com.hauduepascal.ferez96.battleship.controller;
 
 import com.hauduepascal.ferez96.battleship.app.Global;
+import com.hauduepascal.ferez96.battleship.common.Utils;
 import com.hauduepascal.ferez96.battleship.enums.TeamColor;
 import com.hauduepascal.ferez96.battleship.validator.PlayerValidator;
 import org.slf4j.Logger;
@@ -39,9 +40,8 @@ public class Player {
     }
 
     boolean addShip(Ship ship) {
-        int id = ships.size() + 1;
-        Ship myShip = new Ship(id, ship.getHp(), ship.atk, ship.range, this);
-        return ships.add(myShip);
+        if (ship.setOwner(this)) return ships.add(ship);
+        else return false;
     }
 
     Ship getShip(int i) {
@@ -85,17 +85,22 @@ public class Player {
             Optional<Ship> op = ships.stream().filter(x -> x.pos.equals(fc.src)).findAny();
             if (op.isPresent()) {
                 Ship ship = op.get();
+                int range = ship.range;
                 Playground.ICell nextCell = pg.get(fc.target);
-                if (nextCell == null) {
-                    Log.info("Fire to nowhere pos=" + fc.target);
+                if (Utils.manhattanDistance(fc.src, fc.target) > range) {
+                    Log.warn("Invalid command: Out of range " + cmd.plain());
+                    fc.validCommand = false;
+                } else if (nextCell == null) {
+                    Log.warn("Bad command: Fire to nowhere " + cmd.plain());
+                    fc.validCommand = false;
                 } else if (nextCell instanceof Ship) {
                     int damage = (int) Math.ceil(1.0 * ship.hp * ship.atk / 10);
-                    Log.info(ship.toMapInpString() + " fired " + damage + " to " + fc.target);
+                    Log.info(ship.toMapInpString() + " attack " + damage + " to " + fc.target);
                     ((Ship) nextCell).takeDamage(damage);
                 } else if (nextCell instanceof Playground.BlankCell) {
-                    Log.info("Fire to blank cell pos=" + fc.target);
+                    Log.info("Fire to blank cell " + cmd.plain());
                 } else {
-                    Log.error("Unhandled");
+                    Log.error("Unhandled " + cmd.plain());
                     fc.validCommand = false;
                 }
             } else {

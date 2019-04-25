@@ -14,4 +14,6 @@ public class Global {
     public static final Path BLACK_PATH = PROJECT_PATH.resolve(TeamColor.Black.toString());
     public static final Path WHITE_PATH = PROJECT_PATH.resolve(TeamColor.White.toString());
     public static final Path PLAYER_DIR = PROJECT_PATH.resolve("player");
+    public static final Path TMP_DIR = PROJECT_PATH.resolve(".tmp");
+    public static final int N_SHIPS = 5;
 }

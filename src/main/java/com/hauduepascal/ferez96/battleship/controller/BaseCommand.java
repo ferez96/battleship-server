@@ -4,10 +4,11 @@ import java.util.Scanner;
 
 abstract public class BaseCommand {
     boolean validCommand = true;
+    int code;
 
     abstract public void _import(Scanner scanner);
 
-    public abstract String plain();
+    abstract public String plain();
 
     @Override
     public String toString() {
