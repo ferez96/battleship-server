@@ -2,7 +2,7 @@
 
 ## Hệ thống chấm bài
 
-LVersion: v1.2
+Latest Version: v1.2
 
 > Note: nếu bạn sử dụng Windows, hãy chạy `gradlew.bat` thay vì `gradlew`
 
