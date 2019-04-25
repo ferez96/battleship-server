@@ -2,7 +2,7 @@
 
 ## Hệ thống chấm bài
 
-Latest Version: v1.2
+[![Waffle.io](https://img.shields.io/badge/LatestVersion-v1.2-yellow.svg?style=flat)]()
 
 > Note: nếu bạn sử dụng Windows, hãy chạy `gradlew.bat` thay vì `gradlew`
 
@@ -58,6 +58,10 @@ Bạn có thể thay đổi source code của AI mẫu, hoặc tự tạo thư m
 Chỉnh sửa player sẽ đấu với nhau tại file [players.txt](players.txt)
 Chạy `./gradlew play` và tận hưởng kết quả
 
-> Note: Nếu bạn muốn in nội dung này ra file `result.txt` thay vì màn hình, hãy chạy: `./gradlew play >result.txt 2>&1 && tail -n22 result.txt`. Nếu chương trình in ra turn cuối và BUILD SUCCESSFUL là ổn.
+> Note: Nếu bạn muốn in nội dung này ra file `result.txt` thay vì màn hình, hãy chạy: 
+ ```bash
+ ./gradlew play >result.txt 2>&1 && tail -n22 result.txt
+ ```
+> Nếu chương trình in ra kết quả turn cuối và BUILD SUCCESSFUL là ổn.
 
 Have Fun!
