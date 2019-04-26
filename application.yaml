@@ -1,0 +1,10 @@
+app.version: 2.0
+app.author: Duong Thai Minh
+
+nship: 10
+
+judge:
+  port: 60000
+
+webserver:
+  port: 60080

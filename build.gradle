@@ -17,7 +17,12 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
     compile group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    compile group: "org.cfg4j", name:"cfg4j-core", version: "4.4.0"
+    compile group: "org.cfg4j", name:"cfg4j-consul", version: "4.4.0"
+    compile group: "org.cfg4j", name:"cfg4j-git", version: "4.4.0"
 
+    compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.14.v20181114'
+    compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.14.v20181114'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
@@ -31,29 +36,18 @@ test {
 
 // User-defined tasks
 
-task prepare(type: JavaExec, dependsOn: ['build', 'clear']) {
+task runWebServer(type: JavaExec, dependsOn: ['build']){
     group 'hdpascal'
 
     classpath = sourceSets.main.runtimeClasspath // include classpath from main project
-    main = mainClassName
-    args(['prepare', '--size 8', '--rocks', '0', '--create-map', 'true'])
+    main = 'com.hauduepascal.ferez96.battleship.service.WebServer'
+    args([])
 }
 
-task clear(type: JavaExec, dependsOn: ['build']) {
+task runJudgeService(type: JavaExec, dependsOn: ['build']){
     group 'hdpascal'
 
     classpath = sourceSets.main.runtimeClasspath // include classpath from main project
-    main = mainClassName
-    args(['clear'])
-}
-
-
-task play(type: JavaExec, dependsOn: ['build']) {
-    group 'hdpascal'
-
-    classpath = sourceSets.main.runtimeClasspath // include classpath from main project
-    main = mainClassName
-    standardInput = System.in
-    args(['play'])
-
+    main = 'com.hauduepascal.ferez96.battleship.service.JudgeService'
+    args([])
 }
