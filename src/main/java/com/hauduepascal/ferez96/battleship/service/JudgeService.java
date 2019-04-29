@@ -1,20 +1,23 @@
 package com.hauduepascal.ferez96.battleship.service;
 
+import com.hauduepascal.ferez96.battleship.app.ConfProvider;
 import com.hauduepascal.ferez96.battleship.app.Global;
 import com.hauduepascal.ferez96.battleship.common.Utils;
 import com.hauduepascal.ferez96.battleship.controller.Player;
 import com.hauduepascal.ferez96.battleship.controller.Ship;
 import com.hauduepascal.ferez96.battleship.enums.TeamColor;
-import com.hauduepascal.ferez96.battleship.handler.AuctionHandler;
+import com.hauduepascal.ferez96.battleship.service.handler.AuctionHandler;
+import com.hauduepascal.ferez96.battleship.service.handler.SubmissionHandler;
+import com.hauduepascal.ferez96.battleship.service.handler.JudgeHandler;
 import com.hauduepascal.ferez96.battleship.validator.PlayerValidator;
 import org.apache.commons.io.FileUtils;
 import org.cfg4j.provider.ConfigurationProvider;
-import org.cfg4j.provider.ConfigurationProviderBuilder;
-import org.cfg4j.source.files.FilesConfigurationSource;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
+import org.eclipse.jetty.util.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,23 +26,24 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
+import java.nio.file.Paths;
 import java.util.Map;
 
 public class JudgeService extends Server implements IService {
     private static final Logger Log = LoggerFactory.getLogger(JudgeService.class);
+    private static final ConfigurationProvider Conf = ConfProvider.get(Paths.get(ConfProvider.Instance.getProperty("judge_config_file", String.class)));
+
+    public JudgeService() {
+        this(Conf.getProperty("port", Integer.class));
+    }
 
     public JudgeService(int port) {
         super(port);
+        Log.info("Create JudgeService at port: " + port);
     }
 
     public static void main(String[] args) {
-        Log.info("Start JudgeService");
-        ConfigurationProvider provider = new ConfigurationProviderBuilder()
-                .withConfigurationSource(new FilesConfigurationSource(() ->
-                        Collections.singletonList(Global.PROJECT_PATH.resolve("application.yaml"))))
-                .build();
-        IService server = new JudgeService(provider.getProperty("judge.port", Integer.class));
+        IService server = new JudgeService();
         server.setupAndStart();
     }
 
@@ -47,8 +51,17 @@ public class JudgeService extends Server implements IService {
     public boolean setupAndStart() {
         ServletHandler handler = new ServletHandler();
         handler.addServletWithMapping(AuctionHandler.class, "/auction");
+        handler.addServletWithMapping(SubmissionHandler.class, "/submit");
+        handler.addServletWithMapping(JudgeHandler.class, "/judge");
 
-        this.setHandler(handler);
+        ResourceHandler rh0 = new ResourceHandler();
+        rh0.setDirectoriesListed(false);
+        ContextHandler context0 = new ContextHandler();
+        context0.setContextPath("/");
+        context0.setBaseResource(Resource.newResource(ClassLoader.getSystemClassLoader().getResource("html-judge")));
+        context0.setHandler(rh0);
+
+        this.setHandler(new HandlerCollection(context0, handler));
         try {
             start();
         } catch (Exception e) {

@@ -42,8 +42,8 @@ public class BattleShipMain {
     }
 
     public static void main(String[] args) {
-        System.out.println("Author: " + cfgProvider.getProperty("app.author", String.class));
+        System.out.println("Author: " + ConfProvider.Instance.getProperty("app.author", String.class));
         new WebServer(cfgProvider.getProperty("webserver.port", Integer.class)).setupAndStart();
-        new JudgeService(cfgProvider.getProperty("judge.port", Integer.class)).setupAndStart();
+        new JudgeService().setupAndStart();
     }
 }

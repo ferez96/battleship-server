@@ -1,4 +1,4 @@
-package com.hauduepascal.ferez96.battleship.handler;
+package com.hauduepascal.ferez96.battleship.service.handler;
 
 import com.hauduepascal.ferez96.battleship.app.BattleShipMain;
 import com.hauduepascal.ferez96.battleship.controller.Ship;
@@ -24,8 +24,8 @@ public class AuctionHandler extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setStatus(HttpServletResponse.SC_OK);
-        resp.setContentType("text/html;charset=utf-8");
-        resp.getWriter().println("<html>" +
+        resp.setContentType("text/html-judge;charset=utf-8");
+        resp.getWriter().println("<html-judge>" +
                 "<head>" +
                 "<title>Dau gia tau</title>" +
                 "</head>" +
@@ -33,7 +33,7 @@ public class AuctionHandler extends HttpServlet {
         );
         for (Ship ship : ships) resp.getWriter().println(ship.toBeautifulString() + "<br>");
         resp.getWriter().println("</body>" +
-                "</html>");
+                "</html-judge>");
     }
 
     @Override

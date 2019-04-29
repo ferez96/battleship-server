@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hậu Duệ Pascal 2019 | Nộp bài </title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</head>
+<body>
+<form class="form-group container border rounded p-5 bg-dark text-light col-lg-6 col-sm-12" method="post"
+      action="/submit" enctype="multipart/form-data">
+    <legend>Source codes upload:</legend>
+    <input class="form-control" type="text" name="team_name" value="TestTeam" required>
+    <div class="custom-file">
+        <label class="custom-file-label" for="set_cpp">SET.cpp</label>
+        <input class="custom-file-input" type="file" id="set_cpp" name="set_cpp" required>
+        <div class="invalid-feedback">Example invalid custom file feedback</div>
+    </div>
+    <div class="custom-file">
+        <label class="custom-file-label" for="play_cpp">PLAY.cpp</label>
+        <input class="custom-file-input" type="file" id="play_cpp" name="play_cpp" required>
+        <div class="invalid-feedback">Example invalid custom file feedback</div>
+    </div>
+    <input class="btn btn-info" type="submit" name="submit">
+</form>
+</body>
+</html>

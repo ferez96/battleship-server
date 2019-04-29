@@ -3,8 +3,9 @@ app.author: Duong Thai Minh
 
 nship: 10
 
-judge:
-  port: 60000
+players.dir: player
+
+judge_config_file: /home/ferez96/Projects/HauDuePascal/Round-3/battleship-server/config/judge.config.yaml
 
 webserver:
-  port: 60080
+  port: 18080

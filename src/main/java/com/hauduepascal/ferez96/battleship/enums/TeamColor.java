@@ -1,7 +1,7 @@
 package com.hauduepascal.ferez96.battleship.enums;
 
 public enum TeamColor {
-    Black(0), White(1);
+    Black(2), White(1);
 
     public final int id;
 
@@ -11,6 +11,6 @@ public enum TeamColor {
 
     @Override
     public String toString() {
-        return id == 0 ? "black" : "white";
+        return id == 2 ? "black" : "white";
     }
 }
