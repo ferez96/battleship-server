@@ -1,9 +1,7 @@
-package com.hauduepascal.ferez96.battleship.service.handler;
+package com.hauduepascal.ferez96.battleship.servlet;
 
 import com.hauduepascal.ferez96.battleship.app.BattleShipMain;
 import com.hauduepascal.ferez96.battleship.controller.Ship;
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.handler.AbstractHandler;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -13,7 +11,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class AuctionHandler extends HttpServlet {
+public class AuctionServlet extends HttpServlet {
     int nShip = BattleShipMain.cfgProvider.getProperty("nship", Integer.class);
     Ship[] ships = new Ship[nShip];
 

@@ -2,8 +2,11 @@ app.version: 2.0
 app.author: Duong Thai Minh
 
 nship: 10
+size: 50
 
 players.dir: player
+
+db_home: /home/ferez96/.hdpas/
 
 judge_config_file: /home/ferez96/Projects/HauDuePascal/Round-3/battleship-server/config/judge.config.yaml
 

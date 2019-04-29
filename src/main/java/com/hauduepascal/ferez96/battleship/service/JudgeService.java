@@ -6,9 +6,9 @@ import com.hauduepascal.ferez96.battleship.common.Utils;
 import com.hauduepascal.ferez96.battleship.controller.Player;
 import com.hauduepascal.ferez96.battleship.controller.Ship;
 import com.hauduepascal.ferez96.battleship.enums.TeamColor;
-import com.hauduepascal.ferez96.battleship.service.handler.AuctionHandler;
-import com.hauduepascal.ferez96.battleship.service.handler.SubmissionHandler;
-import com.hauduepascal.ferez96.battleship.service.handler.JudgeHandler;
+import com.hauduepascal.ferez96.battleship.servlet.AuctionServlet;
+import com.hauduepascal.ferez96.battleship.servlet.SubmissionServlet;
+import com.hauduepascal.ferez96.battleship.servlet.JudgeServlet;
 import com.hauduepascal.ferez96.battleship.validator.PlayerValidator;
 import org.apache.commons.io.FileUtils;
 import org.cfg4j.provider.ConfigurationProvider;
@@ -31,7 +31,7 @@ import java.util.Map;
 
 public class JudgeService extends Server implements IService {
     private static final Logger Log = LoggerFactory.getLogger(JudgeService.class);
-    private static final ConfigurationProvider Conf = ConfProvider.get(Paths.get(ConfProvider.Instance.getProperty("judge_config_file", String.class)));
+    public static final ConfigurationProvider Conf = ConfProvider.get(Paths.get(ConfProvider.Instance.getProperty("judge_config_file", String.class)));
 
     public JudgeService() {
         this(Conf.getProperty("port", Integer.class));
@@ -50,9 +50,9 @@ public class JudgeService extends Server implements IService {
     @Override
     public boolean setupAndStart() {
         ServletHandler handler = new ServletHandler();
-        handler.addServletWithMapping(AuctionHandler.class, "/auction");
-        handler.addServletWithMapping(SubmissionHandler.class, "/submit");
-        handler.addServletWithMapping(JudgeHandler.class, "/judge");
+        handler.addServletWithMapping(AuctionServlet.class, "/auction");
+        handler.addServletWithMapping(SubmissionServlet.class, "/submit");
+        handler.addServletWithMapping(JudgeServlet.class, "/judge");
 
         ResourceHandler rh0 = new ResourceHandler();
         rh0.setDirectoriesListed(false);

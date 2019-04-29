@@ -1,4 +1,4 @@
-package com.hauduepascal.ferez96.battleship.service.handler;
+package com.hauduepascal.ferez96.battleship.servlet;
 
 import com.hauduepascal.ferez96.battleship.app.BattleShipMain;
 import org.apache.commons.fileupload.FileItem;
@@ -21,8 +21,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class SubmissionHandler extends HttpServlet {
-    private static final Logger Log = LoggerFactory.getLogger(SubmissionHandler.class);
+public class SubmissionServlet extends HttpServlet {
+    private static final Logger Log = LoggerFactory.getLogger(SubmissionServlet.class);
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
