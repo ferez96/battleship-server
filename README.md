@@ -2,7 +2,8 @@
 
 ## Hệ thống chấm bài
 
-[![Waffle.io](https://img.shields.io/badge/LatestVersion-v1.2-yellow.svg?style=flat)]()
+[![Waffle.io](https://img.shields.io/badge/Latest_Version-v1.3-yellow.svg?style=flat)]()
+[![Waffle.io](https://img.shields.io/badge/Change_log-v1.3-Yellow.svg?style=flat)](/changelog.txt)
 
 > Note: nếu bạn sử dụng Windows, hãy chạy `gradlew.bat` thay vì `gradlew`
 

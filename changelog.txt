@@ -1,0 +1,6 @@
+Version 1.3:
+- Update MAP.INP: print both player ships position and points
+Format:
+- 1st line: n, m, id -> your alive ships, enemy alive ships, you id
+- n next lines: hp, atk, range, pos.x, pos.y, status
+- m next lines: hp, atk, range, pos.x, pos.y, status
