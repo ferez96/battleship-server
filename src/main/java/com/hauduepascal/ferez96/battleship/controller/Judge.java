@@ -234,10 +234,10 @@ public class Judge {
             // MAP.INP
             map1.printf("%d %d %d\n", p1.getAliveShipsCount(), p2.getAliveShipsCount(), p1.Color.id);
             for (int i = 0; i < p1.getShipsCount(); ++i) if (p1.getShip(i).hp > 0) map1.println(p1.getShip(i).toMapInpString());
-            for (int i = 0; i < p2.getShipsCount(); ++i) if (p2.getShip(i).hp > 0) map2.println(p2.getShip(i).toMapInpString());
+            for (int i = 0; i < p2.getShipsCount(); ++i) if (p2.getShip(i).hp > 0) map1.println(p2.getShip(i).toMapInpString());
             map2.printf("%d %d %d\n", p2.getAliveShipsCount(), p1.getAliveShipsCount(), p2.Color.id);
             for (int i = 0; i < p2.getShipsCount(); ++i) if (p2.getShip(i).hp > 0) map2.println(p2.getShip(i).toMapInpString());
-            for (int i = 0; i < p1.getShipsCount(); ++i) if (p1.getShip(i).hp > 0) map1.println(p1.getShip(i).toMapInpString());
+            for (int i = 0; i < p1.getShipsCount(); ++i) if (p1.getShip(i).hp > 0) map2.println(p1.getShip(i).toMapInpString());
 
             // REPORT.INP
             report1.println(Report1.size());
