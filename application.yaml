@@ -4,9 +4,9 @@ app.author: Duong Thai Minh
 nship: 10
 size: 50
 
-players.dir: player
+players.dir: /home/ferez96/Projects/HauDuePascal/Round-3/battleship-server/player
 
-db_home: /home/ferez96/.hdpas/
+db_home: /home/ferez96/Projects/HauDuePascal/Round-3/battleship-server/.hdpas/data/
 
 judge_config_file: /home/ferez96/Projects/HauDuePascal/Round-3/battleship-server/config/judge.config.yaml
 

@@ -1,13 +1,15 @@
-package com.hauduepascal.ferez96.battleship.controller;
+package com.hauduepascal.ferez96.battleship.controller.cmd;
+
+import com.hauduepascal.ferez96.battleship.controller.Position;
 
 import java.util.Scanner;
 
-public class FireCommand extends BaseCommand {
-    Position src;
-    Position target;
+public abstract class Fire extends BaseCommand {
+    public Position src;
+    public Position target;
 
-    {
-        code = 1;
+    public Fire() {
+        this.code = 1;
     }
 
     @Override
@@ -24,4 +26,21 @@ public class FireCommand extends BaseCommand {
     public String plain() {
         return String.format("%s %s %s %s %s", code, src.x, src.y, target.x, target.y);
     }
+
+    @Override
+    public ResultData execute() {
+        return null;
+    }
+}
+
+class Flare extends Fire{
+
+}
+
+class Rocket extends Fire{
+
+}
+
+class Normal extends Fire{
+
 }

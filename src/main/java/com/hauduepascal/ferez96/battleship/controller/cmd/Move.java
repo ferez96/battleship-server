@@ -1,13 +1,15 @@
-package com.hauduepascal.ferez96.battleship.controller;
+package com.hauduepascal.ferez96.battleship.controller.cmd;
+
+import com.hauduepascal.ferez96.battleship.controller.Position;
 
 import java.util.Scanner;
 
-public class RunCommand extends BaseCommand {
-    Position pos;
-    char h;
+public class Move extends BaseCommand {
+    public Position pos;
+    private char h;
 
-    {
-        code = 0;
+    public Move() {
+        this.code = 0;
     }
 
     @Override
@@ -24,7 +26,12 @@ public class RunCommand extends BaseCommand {
         return String.format("%s %s %s %s", code, pos.x, pos.y, h);
     }
 
-    Position getNextPosition() {
+    @Override
+    public ResultData execute() {
+        return null;
+    }
+
+    public Position getNextPosition() {
         switch (h) {
             case 'L':
                 return Position.get(pos.x - 1, pos.y);

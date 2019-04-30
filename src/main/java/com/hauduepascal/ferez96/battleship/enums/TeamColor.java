@@ -1,7 +1,7 @@
 package com.hauduepascal.ferez96.battleship.enums;
 
 public enum TeamColor {
-    Black(2), White(1);
+    BLACK(2), WHITE(1);
 
     public final int id;
 

@@ -2,13 +2,18 @@ package com.hauduepascal.ferez96.battleship.controller;
 
 import com.hauduepascal.ferez96.battleship.app.Global;
 import com.hauduepascal.ferez96.battleship.common.Utils;
+import com.hauduepascal.ferez96.battleship.controller.cmd.BaseCommand;
+import com.hauduepascal.ferez96.battleship.controller.cmd.Fire;
+import com.hauduepascal.ferez96.battleship.controller.cmd.Move;
 import com.hauduepascal.ferez96.battleship.enums.TeamColor;
 import com.hauduepascal.ferez96.battleship.validator.PlayerValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class Player {
 
@@ -28,15 +33,15 @@ public class Player {
     private final List<Ship> ships = new ArrayList<>();
 
     public Player(String name, TeamColor color) throws Exception {
-        this(name, color, false);
+        this(name, color, true);
     }
 
-    public Player(String name, TeamColor color, boolean checked) throws Exception {
+    public Player(String name, TeamColor color, boolean check) throws Exception {
         this.Id = MiniIdZen.nextId();
         this.Name = name;
         this.Color = color;
-        this.RootDir = Global.FIELD_PATH.resolve(color.toString().toLowerCase()).toAbsolutePath();
-        if (!checked) PlayerValidator.checkPlayerDir(RootDir);
+        this.RootDir = Global.PLAYER_DIR.resolve(name);
+        if (check) PlayerValidator.checkPlayerDir(RootDir);
     }
 
     boolean addShip(Ship ship) {
@@ -49,8 +54,8 @@ public class Player {
     }
 
     public void move(BaseCommand cmd, Playground pg) {
-        if (cmd instanceof RunCommand) {
-            RunCommand rc = (RunCommand) cmd;
+        if (cmd instanceof Move) {
+            Move rc = (Move) cmd;
             Optional<Ship> op = ships.stream().filter(x -> x.pos.equals(rc.pos)).findAny();
             if (op.isPresent()) {
                 Ship ship = op.get();
@@ -80,8 +85,8 @@ public class Player {
     }
 
     public void fire(BaseCommand cmd, Playground pg) {
-        if (cmd instanceof FireCommand) {
-            FireCommand fc = (FireCommand) cmd;
+        if (cmd instanceof Fire) {
+            Fire fc = (Fire) cmd;
             Optional<Ship> op = ships.stream().filter(x -> x.pos.equals(fc.src)).findAny();
             if (op.isPresent()) {
                 Ship ship = op.get();
