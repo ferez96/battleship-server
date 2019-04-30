@@ -122,6 +122,8 @@ public class Judge {
                         int lb = colorId == TeamColor.White.id ? 1 : 5;
                         int up = colorId == TeamColor.White.id ? 4 : 8;
                         int nShips = scInp.nextInt();
+                        scInp.nextInt(); // ignore enemy ships
+                        scInp.nextInt(); // ignore team id
                         int hp[] = new int[nShips];
                         int atk[] = new int[nShips];
                         int range[] = new int[nShips];
