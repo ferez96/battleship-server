@@ -62,11 +62,11 @@ public class Judge {
         for (int i = 0; i < Global.N_SHIPS; ++i) {
             int pr1 = prices1.get(i);
             int pr2 = prices2.get(i);
-            if (pr1 < pr2) {
+            if (pr1 > pr2) {
                 System.out.println("Player " + p1.Color + " get " + ships[i].toBeautifulString());
                 s1.add(ships[i]);
             }
-            if (pr1 > pr2) {
+            if (pr1 < pr2) {
                 System.out.println("Player " + p2.Color + " get " + ships[i].toBeautifulString());
                 s2.add(ships[i]);
             }
