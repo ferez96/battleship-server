@@ -14,8 +14,6 @@ repositories {
 
 dependencies {
     compile 'commons-io:commons-io:2.5'
-    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-    compile group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     compile group: "org.cfg4j", name:"cfg4j-core", version: "4.4.0"
     compile group: "org.cfg4j", name:"cfg4j-consul", version: "4.4.0"
