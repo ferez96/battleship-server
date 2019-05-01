@@ -120,7 +120,7 @@ public class Judge {
                             System.exit(1);
                         }
                         int lb = colorId == TeamColor.White.id ? 1 : 5;
-                        int up = colorId == TeamColor.White.id ? 4 : 8;
+                        int ub = colorId == TeamColor.White.id ? 4 : 8;
                         int nShips = scInp.nextInt();
                         scInp.nextInt(); // ignore enemy ships
                         scInp.nextInt(); // ignore team id
@@ -133,9 +133,9 @@ public class Judge {
                             hp[i] = scInp.nextInt();
                             atk[i] = scInp.nextInt();
                             range[i] = scInp.nextInt();
-                            int x = scOut.nextInt(), y = scOut.nextInt();
+                            int x = scOut.nextInt(), y = scOut.nextInt();                            
                             pos[i] = Position.get(x, y);
-                            flag[i] = true;
+                            flag[i] = x>=lb && x<=ub;
                         }
                         for (int i = 0; i < nShips; ++i)
                             for (int j = i + 1; j < nShips; ++j)
@@ -151,6 +151,8 @@ public class Judge {
                                 pg.set(pos[i], ship);
                                 p.addShip(ship);
                                 Log.info(String.format("Player %s placed ship %s at %s", p.Name, ship.toBeautifulString(), pos[i]));
+                            }else{
+                                Log.info("Ship placed wrong position: "+pos[i]);
                             }
                         }
                     } catch (IOException ex) {
