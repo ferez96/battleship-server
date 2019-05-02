@@ -1,9 +1,7 @@
 package com.hauduepascal.ferez96.battleship.controller;
 
 import com.hauduepascal.ferez96.battleship.app.Global;
-import com.hauduepascal.ferez96.battleship.common.Utils;
-import com.hauduepascal.ferez96.battleship.controller.cmd.BaseCommand;
-import com.hauduepascal.ferez96.battleship.controller.cmd.Fire;
+import com.hauduepascal.ferez96.battleship.controller.cmd.ICommand;
 import com.hauduepascal.ferez96.battleship.controller.cmd.Move;
 import com.hauduepascal.ferez96.battleship.enums.TeamColor;
 import com.hauduepascal.ferez96.battleship.validator.PlayerValidator;
@@ -12,10 +10,18 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
-public class Player {
+public class Player implements ShipDestroyListener {
+
+    @Override
+    public void onShipDestroy(Ship ship) {
+        this.Ships.put(ship, Position.ZERO);
+    }
+
+    static enum playStatus {Playing, Waiting, Eliminated}
 
     private static class MiniIdZen {
         static private long cnt = 0;
@@ -30,7 +36,13 @@ public class Player {
     public final long Id;
     public final TeamColor Color;
     public final Path RootDir;
-    private final List<Ship> ships = new ArrayList<>();
+    private playStatus status;
+
+    // game info
+    final Map<Ship, Position> Ships = new LinkedHashMap<>();
+    final List<ICommand> History = new ArrayList<>();
+    Path playDir;
+    private int nRocket;
 
     public Player(String name, TeamColor color) throws Exception {
         this(name, color, true);
@@ -41,99 +53,71 @@ public class Player {
         this.Name = name;
         this.Color = color;
         this.RootDir = Global.PLAYER_DIR.resolve(name);
+        this.status = playStatus.Waiting;
         if (check) PlayerValidator.checkPlayerDir(RootDir);
     }
 
-    boolean addShip(Ship ship) {
-        if (ship.setOwner(this)) return ships.add(ship);
-        else return false;
+    boolean prepare(Path playDir) {
+        if (this.status != playStatus.Waiting) return false;
+        this.playDir = playDir;
+        this.status = playStatus.Playing;
+        this.Ships.clear();
+        this.History.clear();
+        this.nRocket = 3;
+        return true;
     }
 
-    Ship getShip(int i) {
-        return ships.get(i);
-    }
-
-    public void move(BaseCommand cmd, Playground pg) {
-        if (cmd instanceof Move) {
-            Move rc = (Move) cmd;
-            Optional<Ship> op = ships.stream().filter(x -> x.pos.equals(rc.pos)).findAny();
-            if (op.isPresent()) {
-                Ship ship = op.get();
-                Position nextPos = rc.getNextPosition();
-                Playground.ICell nextCell = pg.get(nextPos);
-                if (nextCell == null) {
-                    Log.warn("Invalid command: new position out if index pos=" + nextPos);
-                    rc.validCommand = false;
-                } else if (nextCell instanceof Ship) {
-                    Log.info("Crash with another ship");
-                    ((Ship) nextCell).destroy();
-                    ship.destroy();
-                } else if (nextCell instanceof Playground.BlankCell) {
-                    Log.info("Move ship from " + rc.pos + " to " + nextPos);
-                    pg.set(rc.pos, Playground.BLANK_CELL);
-                    pg.set(nextPos, ship);
-                    ship.pos = nextPos;
-                } else {
-                    Log.error("Unhandled");
-                    rc.validCommand = false;
+    public void prepare(ICommand command) {
+        if (command instanceof Move) {
+            Move cmd = (Move) command;
+            Position pos = cmd.getPos();
+            for (Ship ship : Ships.keySet()) {
+                Position sPos = Ships.get(ship);
+                if (sPos.equals(pos)) {
+                    cmd.setShip(ship);
+                    break;
                 }
-            } else {
-                Log.warn("Invalid command: ship not found, pos=" + rc.pos);
-                rc.validCommand = false;
             }
+            cmd.check();
+            History.add(cmd);
         }
     }
-
-    public void fire(BaseCommand cmd, Playground pg) {
-        if (cmd instanceof Fire) {
-            Fire fc = (Fire) cmd;
-            Optional<Ship> op = ships.stream().filter(x -> x.pos.equals(fc.src)).findAny();
-            if (op.isPresent()) {
-                Ship ship = op.get();
-                int range = ship.range;
-                Playground.ICell nextCell = pg.get(fc.target);
-                if (Utils.manhattanDistance(fc.src, fc.target) > range) {
-                    Log.warn("Invalid command: Out of range " + cmd.plain());
-                    fc.validCommand = false;
-                } else if (nextCell == null) {
-                    Log.warn("Bad command: Fire to nowhere " + cmd.plain());
-                    fc.validCommand = false;
-                } else if (nextCell instanceof Ship) {
-                    int damage = (int) Math.ceil(1.0 * ship.hp * ship.atk / 10);
-                    Log.info(ship.toMapInpString() + " attack " + damage + " to " + fc.target);
-                    ((Ship) nextCell).takeDamage(damage);
-                } else if (nextCell instanceof Playground.BlankCell) {
-                    Log.info("Fire to blank cell " + cmd.plain());
-                } else {
-                    Log.error("Unhandled " + cmd.plain());
-                    fc.validCommand = false;
-                }
-            } else {
-                Log.warn("Invalid command: ship not found, pos=" + fc.src);
-                fc.validCommand = false;
-            }
-        }
-    }
-
 
     public int getAliveShipsCount() {
-        int cnt = 0;
-        for (Ship ship : ships) {
-            if (ship.hp > 0) cnt++;
-        }
-        return cnt;
+        return (int) Ships.keySet().stream().filter(x -> x.hp > 0).count();
     }
 
     public int getShipsCount() {
-        return ships.size();
+        return Ships.size();
     }
 
     @Override
     public String toString() {
-        String sb = "==== " + this.Color + " ====" + "\n" +
+        return "==== " + this.Color + " ====" + "\n" +
                 "Id:  \t" + this.Id + "\n" +
                 "Name:\t" + this.Name + "\n" +
                 "Dir: \t" + this.RootDir + "\n";
-        return sb;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Player player = (Player) o;
+
+        if (Id != player.Id) return false;
+        if (!Name.equals(player.Name)) return false;
+        if (Color != player.Color) return false;
+        return RootDir.equals(player.RootDir);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Name.hashCode();
+        result = 31 * result + Color.hashCode();
+        result = 31 * result + RootDir.hashCode();
+        return result;
     }
 }

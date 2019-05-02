@@ -8,73 +8,99 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Ship implements ICell {
+public class Ship implements ICell, Comparable<Ship> {
+
+    private static class CONST {
+        static final int TAKE_DAMAGE = 1;
+        static final int NOT_TAKE_DAMAGE = 0;
+    }
 
     private static final Random RANDOM = new Random();
-    private static final char[] SID = {' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
     private static final Logger Log = LoggerFactory.getLogger(Ship.class);
     private List<ShipDestroyListener> shipDestroyListeners = new ArrayList<>();
 
-    final int id;
+    final long id;
     private Player owner = null;
     int hp;
-    final int atk;
-    final int range;
-    Position pos = Position.ZERO;
-    int status = 0;
-    private Playground playground;
+    int atk;
+    int range;
+    int move;
+    int status = CONST.NOT_TAKE_DAMAGE;
 
     static private int rand(int s, int t) {
         return RANDOM.nextInt(t - s + 1) + s;
     }
 
-    Ship(int id, int hp, int atk, int range, Player owner) {
+    Ship(long id, int hp, int atk, int range, int move, Player owner) {
         this.id = id;
         this.hp = hp;
         this.atk = atk;
         this.range = range;
+        this.move = move;
         this.owner = owner;
+        if (owner!=null) addShipDestroyListener(owner);
     }
 
+    @Deprecated
     public Ship() {
-        this(-1, 10, rand(1, 7), rand(1, 7), null);
+        this(-1, rand(5, 20), rand(1, 7), rand(15, 45), rand(1, 5), null);
     }
 
     public void addShipDestroyListener(ShipDestroyListener listener) {
         shipDestroyListeners.add(listener);
     }
 
-    void destroy() {
-        Log.info("Ship " + toMapInpString() + " has been destroyed");
-        shipDestroyListeners.forEach(x -> x.onShipDestroy(this));
-        playground.onShipDestroy(this);
-        hp = 0;
-        pos = Position.ZERO;
-    }
-
     public int getHp() {
         return hp;
     }
 
+    public int getAtk() {
+        return atk;
+    }
+
+    public int getRange() {
+        return range;
+    }
+
+    public int getMove() {
+        return move;
+    }
+
     public boolean setOwner(Player owner) {
-        if (this.owner == null) {
-            this.owner = owner;
-            return true;
-        }
-        return false;
+        if (this.owner != null) return false;
+        this.owner = owner;
+        addShipDestroyListener(owner);
+        return true;
     }
 
     public Player getOwner() {
         return owner;
     }
 
-    @Override
-    public String toString() {
-        return this.hp + " " + this.atk + " " + this.range;
+    void destroy() {
+        Log.trace("Ship " + this + " has been destroyed");
+        hp = 0;
+        shipDestroyListeners.forEach(x -> x.onShipDestroy(this));
     }
 
-    public String toBeautifulString() {
-        return String.format("<HP:%2d, ATK:%2d, RANGE:%2d>", this.hp, this.atk, this.range);
+    void renewStatus() {
+        status = CONST.NOT_TAKE_DAMAGE;
+    }
+
+    void takeDamage(int d) {
+        takeDamage(d, false);
+    }
+
+    void takeDamage(int d, boolean beFired) {
+        if (beFired) status = CONST.TAKE_DAMAGE;
+        Log.trace("Ship " + this + " take " + d + " damage");
+        if (d >= hp) destroy();
+        else hp -= d;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("<%05d>{HP:%2d, ATK:%d, RANGE:%2d, MOVE:%d | owner:%s, status:%d}", id, hp, atk, range, move, owner.Color, status);
     }
 
     @Override
@@ -83,22 +109,36 @@ public class Ship implements ICell {
         return String.format("%s%02d", owner.Color.toString().toUpperCase().charAt(0), hp);
     }
 
-    public String toMapInpString() {
-        return String.format("%d %d %d %d %d %d", hp, atk, range, pos.x, pos.y, status);
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Ship ship = (Ship) o;
+
+        if (id != ship.id) return false;
+        if (hp != ship.hp) return false;
+        if (atk != ship.atk) return false;
+        if (range != ship.range) return false;
+        if (move != ship.move) return false;
+        return owner != null ? owner.equals(ship.owner) : ship.owner == null;
+
     }
 
-    public void takeDamage(int d) {
-        if (d >= hp) destroy();
-        else hp -= d;
-        status = 1;
+    @Override
+    public int hashCode() {
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (owner != null ? owner.hashCode() : 0);
+        return result;
     }
 
-    public void setPlayground(Playground playground) {
-        this.playground = playground;
-    }
-
-    public Playground getPlayground() {
-        return playground;
+    @Override
+    public int compareTo(Ship o) {
+        return hp != o.hp ? hp - o.hp :
+                atk != o.atk ? atk - o.atk :
+                        range != o.range ? range - o.range :
+                                move - o.move;
     }
 }
 

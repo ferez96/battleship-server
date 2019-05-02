@@ -19,8 +19,8 @@ public class Position {
         private long size = 0;
 
         private boolean contains(int x, int y) {
-            if (POOL.containsKey(x)) {
-                return POOL.get(x).containsKey(y);
+            if (POOL.containsKey((short) x)) {
+                return POOL.get((short) x).containsKey((short) y);
             }
             return false;
         }
@@ -36,7 +36,7 @@ public class Position {
 
         private Position get(int x, int y) {
             if (x <= 0 || y <= 0 || x > 50 || y > 50) return null;
-            if (contains(x, y)) return POOL.get(x).get(y);
+            if (contains(x, y)) return POOL.get((short) x).get((short) y);
             else return pooling(new Position((short) x, (short) y));
         }
     }
@@ -76,6 +76,6 @@ public class Position {
 
     @Override
     public String toString() {
-        return "(" + x + y + ")";
+        return "(" + x + ", " + y + ")";
     }
 }

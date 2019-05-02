@@ -1,17 +1,19 @@
 package com.hauduepascal.ferez96.battleship.common;
 
-import com.hauduepascal.ferez96.battleship.controller.Player;
 import com.hauduepascal.ferez96.battleship.controller.Position;
-import org.apache.commons.exec.*;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.PumpStreamHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -45,16 +47,18 @@ public class Utils {
 
         Path logfile = dir.resolve("log").resolve(filename + ".compile.log").toAbsolutePath();
         Path outfile = dir.resolve("bin").resolve(filename + ".EXE").toAbsolutePath();
+        Path srcfile = source.toAbsolutePath();
         Files.createDirectories(logfile.getParent());
         Files.createDirectories(outfile.getParent());
         Map map = new HashMap();
-        map.put("srcfile", source.toAbsolutePath());
+        map.put("srcfile", srcfile);
         map.put("outfile", outfile);
 //        map.put("logfile", logfile);
 
         CommandLine cmd = new CommandLine("g++");
         cmd.setSubstitutionMap(map);
-        cmd.addArgument("-o2", false);
+        cmd.addArgument("-static", false);
+        cmd.addArgument("-O2", false);
         cmd.addArgument("-std=c++14", false);
         cmd.addArgument("-o", false);
         cmd.addArgument("${outfile}", true);
@@ -67,5 +71,14 @@ public class Utils {
         executor.setWatchdog(wd);
         executor.setStreamHandler(new PumpStreamHandler(new FileOutputStream(logfile.toFile())));
         return executor.execute(cmd);
+    }
+
+    public static int exec(CommandLine cmd, File workingDir, File outFile, int timeout) throws IOException {
+        DefaultExecutor exec = new DefaultExecutor();
+        exec.setWorkingDirectory(workingDir);
+        exec.setWatchdog(new ExecuteWatchdog(timeout));
+        exec.setStreamHandler(new PumpStreamHandler(new FileOutputStream(outFile)));
+        Log.info("Execute command: " + cmd);
+        return exec.execute(cmd);
     }
 }

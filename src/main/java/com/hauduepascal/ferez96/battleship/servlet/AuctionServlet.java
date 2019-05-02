@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
 
+@Deprecated
 public class AuctionServlet extends HttpServlet {
     int nShip = BattleShipMain.cfgProvider.getProperty("nship", Integer.class);
     Ship[] ships = new Ship[nShip];
@@ -29,7 +30,7 @@ public class AuctionServlet extends HttpServlet {
                 "</head>" +
                 "<body>"
         );
-        for (Ship ship : ships) resp.getWriter().println(ship.toBeautifulString() + "<br>");
+        for (Ship ship : ships) resp.getWriter().println(ship + "<br>");
         resp.getWriter().println("</body>" +
                 "</html-judge>");
     }

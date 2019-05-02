@@ -1,25 +1,28 @@
 package com.hauduepascal.ferez96.battleship.controller;
 
 
+import com.hauduepascal.ferez96.battleship.controller.cmd.ICommand;
+import com.hauduepascal.ferez96.battleship.controller.cmd.Move;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Playground implements ShipDestroyListener {
 
-    private final int size;
-    private final int nRock;
-    private final Map<Position, ICell> Playground = new HashMap<>();
     public static final BlankCell BLANK_CELL = new BlankCell();
     public static final Rock ROCK = new Rock();
+    private static final Logger Log = LoggerFactory.getLogger(Playground.class);
 
+    public final Position[] Rocks;
+    private final int size;
+    private final Map<Position, ICell> Playground = new HashMap<>();
 
-    public Playground(int size, int nRock) {
+    public Playground(int size, Position[] rocks) {
         this.size = size;
-        this.nRock = nRock;
-        for (int i = 1; i <= size; ++i)
-            for (int j = 1; j <= size; ++j)
-                this.Playground.put(Position.get(i, j), new BlankCell());
+        this.Rocks = rocks;
     }
 
     public ICell get(Position pos) {
@@ -30,12 +33,19 @@ public class Playground implements ShipDestroyListener {
         return Playground.put(pos, cell);
     }
 
+    public boolean set(Position pos, Ship ship) {
+        Player p = ship.getOwner();
+        p.Ships.put(ship, pos);
+        Playground.put(pos, ship);
+        return true;
+    }
+
     public int getSize() {
         return size;
     }
 
     public int getRockCount() {
-        return nRock;
+        return Rocks.length;
     }
 
     public void prettyPrint(PrintStream ps) {
@@ -46,16 +56,37 @@ public class Playground implements ShipDestroyListener {
         ps.println(line);
         for (int i = 1; i <= size; ++i) {
             for (int j = 1; j <= size; ++j) {
-                ps.printf("|%3s", Playground.get(Position.get(i, j)).toPrettyString());
+                ICell c = Playground.getOrDefault(Position.get(i, j), BLANK_CELL);
+                ps.printf("|%3s", c.toPrettyString());
             }
             ps.println("|");
             ps.println(line);
         }
     }
 
+    public void verify(ICommand command) {
+        if (command instanceof Move) {
+            Move cmd = (Move) command;
+            Position pos = cmd.getPos();
+            Ship ship = cmd.getShip();
+            if (Playground.get(pos).equals(ship)) {
+
+            } else {
+                Log.error("Command verify fail: " + ship + " do not located at " + pos);
+                cmd.setShip(null);
+                cmd.check();
+            }
+        }
+    }
+
     @Override
     public void onShipDestroy(Ship ship) {
-        Playground.put(ship.pos, BLANK_CELL);
+        for (Position pos : Playground.keySet()) {
+            if (Playground.get(pos).equals(ship)) {
+                Playground.put(pos, BLANK_CELL);
+                return;
+            }
+        }
     }
 
     public interface ICell extends java.io.Serializable {
@@ -63,6 +94,9 @@ public class Playground implements ShipDestroyListener {
     }
 
     public static class BlankCell implements ICell {
+        private BlankCell() {
+        }
+
         @Override
         public String toPrettyString() {
             return "   ";
@@ -70,6 +104,9 @@ public class Playground implements ShipDestroyListener {
     }
 
     public static class Rock implements ICell {
+        private Rock() {
+        }
+
         @Override
         public String toPrettyString() {
             return " # ";
