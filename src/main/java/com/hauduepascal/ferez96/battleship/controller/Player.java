@@ -25,7 +25,7 @@ public class Player {
     public final long Id;
     public final TeamColor Color;
     public final Path RootDir;
-    private final List<Ship> ships = new ArrayList<>();
+    public final List<Ship> ships = new ArrayList<>();
 
     public Player(String name, TeamColor color) throws Exception {
         this(name, color, false);

@@ -171,6 +171,8 @@ public class Judge {
         PrintStream logPs = null;
         //
         for (int t = 1; t <= 50; ++t) {
+            for(Ship ship:p1.ships) ship.status=0;
+            for(Ship ship:p2.ships) ship.status=0;
             if (p1.getAliveShipsCount() == 0 || p2.getAliveShipsCount() == 0) {
                 System.out.println("One player have no ships left, game over");
                 System.exit(0);
