@@ -10,8 +10,13 @@
         </layout>
     </appender>
 
-    <appender name="TRACE_FILE" class="ch.qos.logback.core.FileAppender">
-        <file>.hdpas/log/trace.log </file>
+    <appender name="TRACE_FILE" class="ch.qos.logback.core.RollingFileAppender">
+        <file>log/trace.log </file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>log/trace.%i.log </fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>10</maxIndex>
+        </rollingPolicy>
         <append>true</append>
         <encoder>
             <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>

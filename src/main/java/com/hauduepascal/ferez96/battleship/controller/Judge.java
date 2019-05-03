@@ -197,7 +197,7 @@ public class Judge {
                         range = sc.nextInt();
                         move = sc.nextInt();
                         if (buy0[i]) {
-                            Ship ship = new Ship(p[0].Id * 10 + i, hp, atk, range, move, p[0]);
+                            Ship ship = new Ship((p[0].Id+1) * 100 + i, hp, atk, range, move, p[0]);
                             Log.trace("Player " + p[0].Color + " bought ship " + ship);
                             p[0].Ships.put(ship, Position.ZERO);
                         }
@@ -215,7 +215,7 @@ public class Judge {
                         range = sc.nextInt();
                         move = sc.nextInt();
                         if (buy1[i]) {
-                            Ship ship = new Ship(p[1].Id * 10 + i, hp, atk, range, move, p[1]);
+                            Ship ship = new Ship((p[1].Id+1) * 100 + i, hp, atk, range, move, p[1]);
                             Log.trace("Player " + p[1].Color + " bought ship " + ship);
                             p[1].Ships.put(ship, Position.ZERO);
                         }
@@ -451,7 +451,8 @@ public class Judge {
                         ps.printf("%d %s %s\n", p.Id, p.Name, p.Color);
                         ps.println(p.getShipsCount());
                         for (Ship ship : p.Ships.keySet()) {
-                            ps.printf("%d %d %d %d %d\n", ship.id, ship.hp, ship.atk, ship.range, ship.move);
+                            Position pos = p.Ships.get(ship);
+                            ps.printf("%d %d %d %d %d %d %d\n", ship.id, ship.hp, ship.atk, ship.range, ship.move, pos.x, pos.y);
                         }
                     }
                     for (ICommand command : commands) ps.println(command.plain());
@@ -465,7 +466,7 @@ public class Judge {
                             } else if (cell instanceof Ship) {
                                 ps.println(((Ship) cell).id);
                             } else {
-                                ps.println();
+                                ps.println(-2);
                             }
                         }
                     }
