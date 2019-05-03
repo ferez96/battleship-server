@@ -439,14 +439,17 @@ public class Judge {
                         if (cmd1 instanceof Fire) fire((Fire) cmd1);
                         if (cmd2 instanceof Fire) fire((Fire) cmd2);
                     }
-                } else {
+                } else if (commands.size() == 1) {
                     ICommand cmd = commands.get(0);
                     if (cmd instanceof Move) move((Move) cmd);
                     if (cmd instanceof Fire) fire((Fire) cmd);
                 }
 
+                // Print result
                 try (PrintStream ps = new PrintStream(dir.resolve("results/Turn_" + Turn).toFile())) {
                     for (Player p : p) {
+                        ps.printf("%d %s %s\n", p.Id, p.Name, p.Color);
+                        ps.println(p.getShipsCount());
                         for (Ship ship : p.Ships.keySet()) {
                             ps.printf("%d %d %d %d %d\n", ship.id, ship.hp, ship.atk, ship.range, ship.move);
                         }

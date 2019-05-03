@@ -7,7 +7,6 @@ import com.hauduepascal.ferez96.battleship.enums.TeamColor;
 import org.apache.commons.io.FileUtils;
 import org.cfg4j.provider.ConfigurationProvider;
 import org.cfg4j.provider.ConfigurationProviderBuilder;
-import org.cfg4j.source.ConfigurationSource;
 import org.cfg4j.source.files.FilesConfigurationSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,12 +14,8 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 public class BattleShipMain {
     private static final Logger Log = LoggerFactory.getLogger(BattleShipMain.class);

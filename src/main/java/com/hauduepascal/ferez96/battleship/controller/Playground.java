@@ -28,6 +28,7 @@ public class Playground implements ShipDestroyListener {
                 Playground.put(Position.get(i, j), BLANK_CELL);
             }
         }
+        for (Position pos : rocks) Playground.put(pos, ROCK);
     }
 
     public ICell get(Position pos) {

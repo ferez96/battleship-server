@@ -6,7 +6,7 @@ size: 50
 
 players.dir: /home/ferez96/Projects/HauDuePascal/Round-3/battleship-server/player
 
-db_home: /home/ferez96/Projects/HauDuePascal/Round-3/battleship-server/.hdpas/data/
+db_home: /home/ferez96/.hdpas/data/
 
 judge_config_file: /home/ferez96/Projects/HauDuePascal/Round-3/battleship-server/config/judge.config.yaml
 
