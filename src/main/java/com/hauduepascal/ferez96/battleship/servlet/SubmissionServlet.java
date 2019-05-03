@@ -1,6 +1,7 @@
 package com.hauduepascal.ferez96.battleship.servlet;
 
 import com.hauduepascal.ferez96.battleship.app.BattleShipMain;
+import com.hauduepascal.ferez96.battleship.app.Global;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -64,7 +65,7 @@ public class SubmissionServlet extends HttpServlet {
                     }
                 }
                 if (dirName != null && set_cpp != null && play_cpp != null) {
-                    Path playerDir = Paths.get(BattleShipMain.cfgProvider.getProperty("players.dir", String.class)).resolve(dirName);
+                    Path playerDir = Paths.get(Global.Conf.getProperty("players.dir", String.class)).resolve(dirName);
                     Log.info("Upload player source code to: " + playerDir);
                     Files.createDirectories(playerDir);
                     try (PrintStream ps = new PrintStream(String.valueOf(playerDir.resolve("SET.CPP")))) {

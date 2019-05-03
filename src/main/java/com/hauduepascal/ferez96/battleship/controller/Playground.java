@@ -23,6 +23,11 @@ public class Playground implements ShipDestroyListener {
     public Playground(int size, Position[] rocks) {
         this.size = size;
         this.Rocks = rocks;
+        for (int i = 1; i <= size; ++i) {
+            for (int j = 1; j <= size; ++j) {
+                Playground.put(Position.get(i, j), BLANK_CELL);
+            }
+        }
     }
 
     public ICell get(Position pos) {
@@ -61,21 +66,6 @@ public class Playground implements ShipDestroyListener {
             }
             ps.println("|");
             ps.println(line);
-        }
-    }
-
-    public void verify(ICommand command) {
-        if (command instanceof Move) {
-            Move cmd = (Move) command;
-            Position pos = cmd.getPos();
-            Ship ship = cmd.getShip();
-            if (Playground.get(pos).equals(ship)) {
-
-            } else {
-                Log.error("Command verify fail: " + ship + " do not located at " + pos);
-                cmd.setShip(null);
-                cmd.check();
-            }
         }
     }
 

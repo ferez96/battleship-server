@@ -2,9 +2,7 @@ package com.hauduepascal.ferez96.battleship.controller;
 
 import com.hauduepascal.ferez96.battleship.app.Global;
 import com.hauduepascal.ferez96.battleship.common.Utils;
-import com.hauduepascal.ferez96.battleship.controller.cmd.Fire;
-import com.hauduepascal.ferez96.battleship.controller.cmd.ICommand;
-import com.hauduepascal.ferez96.battleship.controller.cmd.Move;
+import com.hauduepascal.ferez96.battleship.controller.cmd.*;
 import com.hauduepascal.ferez96.battleship.enums.TeamColor;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -169,6 +167,12 @@ public class Judge {
                 } catch (IOException ex) {
                     Log.error("Read result fail", ex);
                 }
+
+                try {
+                    Files.move(p.playDir.resolve("AUCTION.OUT"), p.playDir.resolve("log/AUCTION"), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    //
+                }
             }
 
             // Judge
@@ -224,6 +228,12 @@ public class Judge {
                 this.status = GameStatus.Done;
                 Log.info("Player " + winner + " win the game");
             }
+            try {
+                Files.move(p[0].playDir.resolve("SHIP.INP"), p[0].playDir.resolve("log/SHIP.INP"), StandardCopyOption.REPLACE_EXISTING);
+                Files.move(p[1].playDir.resolve("SHIP.INP"), p[1].playDir.resolve("log/SHIP.INP"), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                //
+            }
         } else Log.info("Phase 1 skipped");
     }
 
@@ -277,7 +287,7 @@ public class Judge {
                 // Exec
                 try {
                     CommandLine cmd = new CommandLine(p.playDir.resolve("bin/SET.EXE").toString());
-                    int rv = Utils.exec(cmd, p.playDir.toFile(), p.playDir.resolve("log.SET.run.log").toFile(), 1000);
+                    int rv = Utils.exec(cmd, p.playDir.toFile(), p.playDir.resolve("log/SET.run.log").toFile(), 1000);
                     if (rv != 0) Log.error("Execute error return value: " + rv);
                 } catch (Exception ex) {
                     Log.error("Execute cause error", ex);
@@ -307,6 +317,12 @@ public class Judge {
                     // TODO: this player will be eliminated
                 }
 
+                try {
+                    Files.move(p.playDir.resolve("SET.INP"), p.playDir.resolve("log/SET.INP"), StandardCopyOption.REPLACE_EXISTING);
+                    Files.move(p.playDir.resolve("SET.OUT"), p.playDir.resolve("log/SET.OUT"), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    //
+                }
                 // Place ship
                 Map<Position, Boolean> validPosition = new HashMap<>();
                 for (Position pos : pg.Rocks) validPosition.put(pos, false); // Rocks is invalid pos
@@ -338,7 +354,7 @@ public class Judge {
         if (status == GameStatus.Processing) {
             Log.info("Start phase 3");
 
-            for (int Turn = 1; Turn <= 5; ++Turn) {
+            for (int Turn = 1; Turn <= 500; ++Turn) {
                 for (Ship ship : p[0].Ships.keySet()) ship.renewStatus();
                 for (Ship ship : p[1].Ships.keySet()) ship.renewStatus();
 
@@ -368,7 +384,7 @@ public class Judge {
                     }
                     File report_inp = p.playDir.resolve("REPORT.INP").toFile();
                     try (PrintStream ps = new PrintStream(report_inp)) {
-                        ps.println(Turn);
+                        ps.println(p.History.size());
                         p.History.forEach(ps::println);
                         Log.info("Write " + report_inp);
                     } catch (IOException e) {
@@ -393,12 +409,17 @@ public class Judge {
                         Log.error("", e);
                     }
 
+                    try {
+                        Files.move(p.playDir.resolve("MAP.INP"), p.playDir.resolve("log/MAP_" + Turn), StandardCopyOption.REPLACE_EXISTING);
+                        Files.move(p.playDir.resolve("DECISION.OUT"), p.playDir.resolve("log/DECISION_" + Turn), StandardCopyOption.REPLACE_EXISTING);
+                    } catch (IOException e) {
+                        //
+                    }
 
                     ICommand command = ICommand.getInstance(cmd);
+                    p.prepare(command);
                     if (command != null) {
                         Log.trace("Turn " + Turn + ": Player " + p.Id + " decided command " + cmd);
-                        p.prepare(command);
-                        pg.verify(command);
                         if (command.isValidCommand()) commands.add(command);
                     } else {
                         Log.trace("Turn " + Turn + ": Player " + p.Id + " decided unknown command " + cmd);
@@ -411,7 +432,7 @@ public class Judge {
                     ICommand cmd2 = commands.get(1);
 
                     if (cmd1 instanceof Move && cmd2 instanceof Move) moveBoth((Move) cmd1, (Move) cmd2);
-                    else if (cmd1 instanceof Fire && cmd2 instanceof Fire) fireBoth((Fire) cmd1, (Fire) cmd2);
+                    else if (cmd1 instanceof Normal && cmd2 instanceof Normal) fireBoth((Normal) cmd1, (Normal) cmd2);
                     else {
                         if (cmd1 instanceof Move) move((Move) cmd1);
                         if (cmd2 instanceof Move) move((Move) cmd2);
@@ -424,6 +445,31 @@ public class Judge {
                     if (cmd instanceof Fire) fire((Fire) cmd);
                 }
 
+                try (PrintStream ps = new PrintStream(dir.resolve("results/Turn_" + Turn).toFile())) {
+                    for (Player p : p) {
+                        for (Ship ship : p.Ships.keySet()) {
+                            ps.printf("%d %d %d %d %d\n", ship.id, ship.hp, ship.atk, ship.range, ship.move);
+                        }
+                    }
+                    for (ICommand command : commands) ps.println(command.plain());
+                    for (int i = 1; i <= 50; ++i) {
+                        for (int j = 1; j <= 50; ++j) {
+                            Playground.ICell cell = pg.get(Position.get(i, j));
+                            if (cell == Playground.BLANK_CELL) {
+                                ps.println(0);
+                            } else if (cell == Playground.ROCK) {
+                                ps.println(-1);
+                            } else if (cell instanceof Ship) {
+                                ps.println(((Ship) cell).id);
+                            } else {
+                                ps.println();
+                            }
+                        }
+                    }
+                    Log.info("Write turn result");
+                } catch (FileNotFoundException e) {
+                    //
+                }
             }
 
         } else Log.info("Phase 3 skipped");
@@ -467,8 +513,8 @@ public class Judge {
         for (int i = 1; i <= Math.min(ship.move, s.length()); ++i) {
             pos = Move.getNextPosition(pos, s.charAt(i - 1));
             Log.trace("Ship " + ship + " try to move to " + pos);
-            Playground.ICell target = pg.get(pos);
-            if (target != null) {
+            if (pos != null) {
+                Playground.ICell target = pg.get(pos);
                 if (target instanceof Playground.Rock) {
                     Log.trace("Ship " + ship + " crashed rock at " + pos);
                     ship.destroy();
@@ -481,6 +527,9 @@ public class Judge {
                     other.takeDamage(dmg);
                     break;
                 }
+            } else {
+                ship.destroy();
+                break;
             }
         }
 
@@ -492,11 +541,79 @@ public class Judge {
     }
 
     private void fire(Fire fire) {
+        if (fire == null) return;
+        if (fire instanceof Normal) {
+            Normal cmd = (Normal) fire;
 
+            Position pos = cmd.getPos();
+            Position target = cmd.getTarget();
+            Ship ship = cmd.getShip();
+
+            int dist = Utils.manhattanDistance(pos, target);
+            if (dist <= ship.range) {
+                Log.trace("Ship " + ship + " fire " + target);
+                Playground.ICell cell = pg.get(target);
+                if (cell instanceof Ship) {
+                    cmd.success();
+                    int dmg = (int) Math.ceil(ship.atk * ship.hp / 10);
+                    Log.trace("Ship " + ship + " make " + dmg + " damage to " + cell);
+                    ((Ship) cell).takeDamage(dmg, true);
+                }
+            } else {
+                Log.trace("Can not fire, " + target + " is too far from " + pos);
+            }
+        } else if (fire instanceof Flare) {
+            Flare cmd = (Flare) fire;
+            Position tl = cmd.getTop_left();
+            Position br = cmd.getBottom_right();
+            int cnt = 0;
+            for (int x = tl.x; x <= br.y; ++x) {
+                for (int y = tl.y; y <= br.y; ++y) {
+                    Playground.ICell cell = pg.get(Position.get(x, y));
+                    if (cell instanceof Ship) {
+                        Ship ship = (Ship) cell;
+                        if (!ship.getOwner().equals(cmd.getPlayer())) cnt++;
+                    }
+                }
+            }
+            cmd.setCount(cnt);
+            Log.trace("Flare found " + cnt + "enemy ship in range [" + tl + " " + br + "]");
+        } else if (fire instanceof Rocket) {
+            Rocket cmd = (Rocket) fire;
+            for (int i = 1; i <= 50; ++i) {
+                Position pos = cmd.getDirection() == 1 ? Position.get(cmd.getIndex(), i) : Position.get(i, cmd.getIndex());
+                if (pg.get(pos) instanceof Ship) {
+                    Log.trace("Rocket fire " + pos);
+                    ((Ship) pg.get(pos)).takeDamage(5);
+                }
+            }
+        }
     }
 
-    private void fireBoth(Fire f1, Fire f2) {
+    private void fireBoth(Normal f1, Normal f2) {
+        Map<Ship, Integer> pendingDmg = new HashMap<>();
+        for (Normal cmd : new Normal[]{f1, f2}) {
+            Position pos = cmd.getPos();
+            Position target = cmd.getTarget();
+            Ship ship = cmd.getShip();
 
+            int dist = Utils.manhattanDistance(pos, target);
+            if (dist <= ship.range) {
+                Log.trace("Ship " + ship + " fire " + target);
+                Playground.ICell cell = pg.get(target);
+                if (cell instanceof Ship) {
+                    cmd.success();
+                    int dmg = (int) Math.ceil(ship.atk * ship.hp / 10);
+                    pendingDmg.put((Ship) cell, dmg);
+                    Log.trace("Ship " + ship + " make " + dmg + " damage to " + cell);
+                }
+            } else {
+                Log.trace("Can not fire, " + target + " is too far from " + pos);
+            }
+        }
+        for (Ship ship : pendingDmg.keySet()) {
+            ship.takeDamage(pendingDmg.get(ship), true);
+        }
     }
 
 }

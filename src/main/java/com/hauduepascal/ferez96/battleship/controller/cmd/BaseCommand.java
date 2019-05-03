@@ -13,8 +13,6 @@ abstract public class BaseCommand implements ICommand {
 
     abstract public String plain();
 
-    abstract public ResultData execute();
-
     public boolean isValidCommand() {
         return validCommand;
     }

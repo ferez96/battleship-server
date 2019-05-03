@@ -16,4 +16,15 @@ public interface ICommand {
         if (Normal.match(cmd)) return new Normal(cmd);
         return null;
     }
+
+    static final ICommand NULL_CMD = new BaseCommand() {
+        {
+            validCommand = false;
+        }
+
+        @Override
+        public String plain() {
+            return null;
+        }
+    };
 }

@@ -1,8 +1,7 @@
 package com.hauduepascal.ferez96.battleship.controller;
 
 import com.hauduepascal.ferez96.battleship.app.Global;
-import com.hauduepascal.ferez96.battleship.controller.cmd.ICommand;
-import com.hauduepascal.ferez96.battleship.controller.cmd.Move;
+import com.hauduepascal.ferez96.battleship.controller.cmd.*;
 import com.hauduepascal.ferez96.battleship.enums.TeamColor;
 import com.hauduepascal.ferez96.battleship.validator.PlayerValidator;
 import org.slf4j.Logger;
@@ -67,19 +66,51 @@ public class Player implements ShipDestroyListener {
         return true;
     }
 
+    private Ship getShipAt(Position pos) {
+        for (Ship ship : Ships.keySet()) {
+            Position sPos = Ships.get(ship);
+            if (sPos.equals(pos)) return ship;
+        }
+        return null;
+    }
+
     public void prepare(ICommand command) {
-        if (command instanceof Move) {
-            Move cmd = (Move) command;
-            Position pos = cmd.getPos();
-            for (Ship ship : Ships.keySet()) {
-                Position sPos = Ships.get(ship);
-                if (sPos.equals(pos)) {
-                    cmd.setShip(ship);
-                    break;
+        if (command == null) {
+            History.add(ICommand.NULL_CMD);
+        } else {
+            if (command instanceof Move) {
+                Move cmd = (Move) command;
+                Position pos = cmd.getPos();
+                for (Ship ship : Ships.keySet()) {
+                    Position sPos = Ships.get(ship);
+                    if (sPos.equals(pos)) {
+                        cmd.setShip(ship);
+                        break;
+                    }
                 }
+                cmd.check();
+            } else if (command instanceof Normal) {
+                Normal cmd = (Normal) command;
+                Position pos = cmd.getPos();
+                Ship ship = getShipAt(pos);
+                cmd.setShip(ship);
+                cmd.check();
+            } else if (command instanceof Flare){
+                Flare cmd = (Flare) command;
+                cmd.setPlayer(this);
+                cmd.setCount(0);
+                cmd.check();
+            } else if (command instanceof Rocket){
+                Rocket cmd = (Rocket) command;
+                if (nRocket>0){
+                    nRocket--;
+                    cmd.setPlayer(this);
+                }else{
+                    Log.trace("Run out of rockets");
+                }
+                cmd.check();
             }
-            cmd.check();
-            History.add(cmd);
+            History.add(command);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.hauduepascal.ferez96.battleship.servlet;
 
 import com.hauduepascal.ferez96.battleship.app.BattleShipMain;
+import com.hauduepascal.ferez96.battleship.app.Global;
 import com.hauduepascal.ferez96.battleship.controller.Ship;
 
 import javax.servlet.ServletException;
@@ -13,7 +14,7 @@ import java.util.Scanner;
 
 @Deprecated
 public class AuctionServlet extends HttpServlet {
-    int nShip = BattleShipMain.cfgProvider.getProperty("nship", Integer.class);
+    int nShip = Global.Conf.getProperty("nship",Integer.class);
     Ship[] ships = new Ship[nShip];
 
     {

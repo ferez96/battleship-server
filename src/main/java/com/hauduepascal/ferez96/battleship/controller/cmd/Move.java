@@ -15,6 +15,7 @@ public class Move extends BaseCommand {
 
 
     public static Position getNextPosition(Position pos, char h) {
+        if (pos == null) return null;
         if (h == 'U') return Position.get(pos.x - 1, pos.y);
         if (h == 'D') return Position.get(pos.x + 1, pos.y);
         if (h == 'L') return Position.get(pos.x, pos.y - 1);
@@ -71,11 +72,6 @@ public class Move extends BaseCommand {
     @Override
     public String plain() {
         return String.format("%s %s %s %s", code, pos.x, pos.y, s);
-    }
-
-    @Override
-    public ResultData execute() {
-        return null;
     }
 
 }
